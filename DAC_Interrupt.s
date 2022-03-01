@@ -8,6 +8,8 @@ DAC_Int_Hi:
 	btfss	TMR0IF		; check that this is timer0 interrupt
 	retfie	f		; if not then return
 	incf	LATJ, F, A	; increment PORTD
+	movlw	0x01
+	movwf	PORTH, A
 	bcf	TMR0IF		; clear interrupt flag
 	retfie	f		; fast return from interrupt
 

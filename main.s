@@ -10,6 +10,8 @@ int_hi:	org	0x0008	; high vector, no low vector
 	goto	DAC_Int_Hi
 	
 start:	call	DAC_Setup
+	clrf	TRISH, A	; Set PORTD as all outputs
+	clrf	LATH, A
 	goto	$	; Sit in infinite loop
 
 	end	rst

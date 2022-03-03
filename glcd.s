@@ -196,7 +196,7 @@ loop1:		 movf    counterpage, W, A
 		 
 		 
 loop2:		 
-		 movlw	 0xaa
+		 movlw	 0x00
 		 call	 LcdSendData
 		 decfsz  counterpixel,F,A
 		 bra	 loop2

@@ -13,6 +13,7 @@ global  LcdSelectRight
 global  LcdSetPage
 global  LcdSetRow
 global  LcdReset
+global  LcdClear
  
 LCD_RES_TRIS    equ     TRISB           ; /RES        
  LCD_RES_LAT     equ     LATB
@@ -38,13 +39,12 @@ LCD_RES_TRIS    equ     TRISB           ; /RES
  LCD_EN_LAT      equ     LATB
  LCD_EN          equ     4
  
- ;LCD_LED_TRIS    equ     TRISB           ; LED+
- ;LCD_LED_LAT     equ     LATB
- ;LCD_LED         equ     7
  
  LCD_DATA_TRIS   equ     TRISD           ; D0-D7
  LCD_DATA_PORT   equ     PORTD
- LCD_DATA_LAT    equ     LATD		 
+ LCD_DATA_LAT    equ     LATD
+   
+ 	
  ;===============================================================================
  ; Data Areas
  ;-------------------------------------------------------------------------------
@@ -53,6 +53,9 @@ LCD_RES_TRIS    equ     TRISB           ; /RES
  
  PAGE_NO:         ds     1
  ROW_NO:          ds     1
+ counterpixel:	  ds	 1 
+ counterpage:	  ds	 1
+ rightleft:	  ds	 1
  
  ;===============================================================================
  ; Graphical LCD Control Routines
@@ -178,6 +181,38 @@ psect	lcd_code, class=CODE
                  bsf     LCD_CS1_LAT,LCD_CS1, A
                  bcf     LCD_CS2_LAT,LCD_CS2, A
                  return
+		 
+LcdClear:
+		 movlw	 0x02
+		 movwf	 rightleft, A
+		 movlw	 0x08
+		 movwf	 counterpage, A
+		 call    LcdSelectLeft
+		 
+loop1:		 movf    counterpage, W, A
+		 call	 LcdSetPage
+		 movlw	 0x40
+		 movwf	 counterpixel, A
+		 
+		 
+loop2:		 
+		 movlw	 0xaa
+		 call	 LcdSendData
+		 decfsz  counterpixel,F,A
+		 bra	 loop2
+		 decfsz  counterpage,F,A
+		 bra	 loop1
+		 bra	 loop3
+		 
+loop3:		 call    LcdSelectRight
+		 movlw	 0x08
+		 movwf	 counterpage, A
+		 decfsz	 rightleft,F,A
+		 bra	 loop1
+		 return
+		 
+		 
+		 
  
  ; Generates and sends a command to set the selected page 
  

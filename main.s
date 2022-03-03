@@ -1,6 +1,6 @@
 #include <xc.inc>
 
-extrn	LcdOpen, LcdSendData, LcdSelectLeft, LcdSelectRight, LcdSetPage, LcdSetRow, LcdDisplayOn, LcdDisplayOff, LcdReset
+extrn	LcdOpen, LcdSendData, LcdSelectLeft, LcdSelectRight, LcdSetPage, LcdSetRow, LcdDisplayOn, LcdDisplayOff, LcdReset, LcdClear
 	
 psect	udata_acs   ; reserve data space in access ram
 
@@ -26,7 +26,7 @@ setup:	bcf	CFGS	; point to Flash program memory
 start: 	call	LcdOpen
 	call	LcdDisplayOn
 	
-reset1:	call    LcdSelectRight
+reset1:	;call    LcdSelectLeft
 	;movlw	0x01
 	;call	LcdSetPage
 ;	movlw	0x7F
@@ -39,10 +39,21 @@ reset1:	call    LcdSelectRight
 ;	call	LcdSendData
 ;	movlw	0x7F
 ;	call	LcdSendData
+;	movlw	0x01
+;	call	LcdSetPage
 ;	movlw	0x00
 ;	call	LcdSendData
+	
 	;call	LcdReset
 	;bra	reset1
+	call    LcdClear
+	call    LcdSelectLeft
+	movlw	0x02
+	call	LcdSetPage
+	movlw	0x01
+	call    LcdSetRow
+	movlw	0xaa
+	call	LcdSendData
 	goto	$		; goto current line in code
 
 	end	rst

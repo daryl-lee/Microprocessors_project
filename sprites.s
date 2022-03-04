@@ -40,7 +40,7 @@ right_size:
     movwf	size_right, A; 
     incf	size_right, F, A
     movf	page_length, W, A
-    movlw	0x63
+    movlw	0x3f
     cpfsgt	x_coord, A; if x1>64 skip
     bra		inbetween
     bra		displayright

@@ -4,20 +4,21 @@ extrn	LcdOpen, LcdSendData, LcdSelectLeft, LcdSelectRight, LcdSetPage, LcdSetRow
 global	make_sprite_x, set_y
     
 psect	udata_acs
-    aaa:          ds     1
-    bbb:	  ds	 1
-    ccc:	  ds	 1
+    factor:		 ds      1
+    y_page:		 ds	 1
+    screen_length:	 ds	 1
     x_coord2:	  ds	 1
     size_right:	  ds	 1
     size:         ds     1
     page_length:  ds	 1
     x_coord:	  ds	 1
     y_coord:	  ds	 1
+    y_coord_temp: ds	 1
     
 psect	sprite_code, class=CODE
 
 set_y:
-    movwf	y_coord, A
+    movwf	y_page, A
     return
     
 make_sprite_x:
@@ -43,8 +44,19 @@ right_size:
     movlw	0x3f
     cpfsgt	x_coord, A; if x1>64 skip
     bra		inbetween
+    movlw	0x7f
+    cpfsgt	x_coord2, A
     bra		displayright
+    bra		right_edge
 
+right_edge:
+    movlw	0x80
+    movwf	screen_length, A
+    movf	x_coord, W, A
+    subwf	screen_length, W, A ;128-x1
+    movwf	size, A
+    bra		displayright
+    
 inbetween:
     movf	x_coord, W, A
     subwf	page_length, W, A; 64-x1
@@ -63,7 +75,7 @@ displayleft:
     call        LcdSetRow
  
 set_page:	
-    movf	y_coord, W, A
+    movf	y_page, W, A
     call	LcdSetPage
 display:
     movlw	0xff
@@ -79,6 +91,41 @@ displayright:
     subwf	x_coord, W, A
     call        LcdSetRow
     bra		set_page
+    
+divide8:
+    movff	y_coord, y_coord_temp
+    movlw	0x00
+    movwf	factor, A
+    movlw	0x08
+    cpfslt	y_coord, A; skip if y1<8
+    bra		divide
+    return
+	
+divide: 
+    subwf	y_coord_temp, F, A
+    incf	factor, F, A
+    cpfslt	y_coord_temp, A
+    bra		divide
+    return
+    
+;make_sprite_y:
+;    movwf	y_coord, A
+;    call	divide8
+;    movlw	0x07
+;    movwf	y_page, A
+;    movf	factor, W, A
+;    subwf	y_page, F, A
+;    movlw	0x40
+;    movwf	page_length, A
+;    movlw	0x08
+;    movwf	size, A
+;    addwf	y_coord, W, A; x2 in W
+;    movwf	y_coord2, A
+;    decf	y_coord2, F, A
+;    movf	y_coord2, W, A
+;    cpfsgt	page_length, A; if 64>x2, skip  (all on left)
+;    bra		right_size
+;    bra		displayleft    
     
     end
     

@@ -28,23 +28,34 @@ setup:	bcf	CFGS	; point to Flash program memory
 	; ******* Main programme ****************************************
 start: 	call	LcdOpen
 	call	LcdDisplayOn
+	movlw	0b10110100
+	movwf	start_x, A
+	rlcf	start_x, W, A
+	
 	
 reset1:	
 	call    LcdClear
-	movlw	0x00
+	movlw	0x7f
 	movwf	start_x, A
 	
 loop:	
 	call    LcdSelectLeft
-	movlw	0x02
+	movlw	0x06
 	call	set_y
 	movf	start_x, W, A
 	;movlw	0x4a
 	call    make_sprite_x
-	movlw   0xaf
+	movlw	0x05
+	call	set_y
+	movf	start_x, W, A
+	;movlw	0x4a
+	call    make_sprite_x
+	movlw   0x20
+	call	delay_ms
+	movlw   0x30
 	call	delay_ms
 	call    LcdClear
-	incf	start_x, F, A
+	decfsz	start_x, F, A
 	bra	loop
 ;	movlw	0x03
 ;	call	set_y
@@ -52,7 +63,7 @@ loop:
 ;	call    make_sprite_x
 
 	
-	goto	$		; goto current line in code
+	goto	reset1		; goto current line in code
 	
 delay_ms:		    ; delay given in ms in W
 	movwf	cnt_ms, A

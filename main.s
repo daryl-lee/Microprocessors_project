@@ -1,7 +1,7 @@
 #include <xc.inc>
 
 extrn	LcdOpen, LcdSendData, LcdSelectLeft, LcdSelectRight, LcdSetPage, LcdSetRow, LcdDisplayOn, LcdDisplayOff, LcdReset, LcdClear, make_sprite_x, set_y
-extrn	set_x, make_sprite_y, LcdSetStart
+extrn	set_x, make_sprite_y, LcdSetStart, key_setup, key_setup_column, key_delay_ms, key_setup_row, decode
 
 
 psect	udata_acs   ; named variables in access ram
@@ -10,6 +10,9 @@ cnt_h:	ds 1   ; reserve 1 byte for variable LCD_cnt_h
 cnt_ms:	ds 1   ; reserve 1 byte for ms counter
 start_x: ds 1
 start_y: ds 1
+keys1:	ds  1
+keys2:	ds  1
+key_bool: ds 1
     
 psect	udata_bank4 ; reserve data anywhere in RAM (here at 0x400)
 myArray:    ds 0x80 ; reserve 128 bytes for message data
@@ -25,6 +28,8 @@ setup:	bcf	CFGS	; point to Flash program memory
 	bsf	EEPGD 	; access Flash program memory
 	
 	call	LcdOpen	; setup glcd
+	call	key_setup
+	
 	goto	start
 	
 	; ******* Main programme ****************************************
@@ -40,15 +45,15 @@ reset1:
 	call    LcdClear
 	movlw	0x7f
 	movwf	start_x, A
-	movlw	0x00
+	movlw	0x08
 	movwf	start_y, A
 	
 loop:	
+    
 	call    LcdSelectLeft
 	movlw	0x06
 	call	set_y
 	movf	start_x, W, A
-	;movlw	0x4a
 	call    make_sprite_x
 	movlw	0x2a
 	call	set_x
@@ -57,54 +62,74 @@ loop:
 	movlw	0x05
 	call	set_y
 	movf	start_x, W, A
-	;movlw	0x4a
 	call    make_sprite_x
 	movlw   0x70
 	call	delay_ms
 	call    LcdClear
 	movlw   0x20
-	incf	start_y, F, A
-	incf	start_y, F, A
 	decf	start_x, F, A
 	decf	start_x, F, A
 	decf	start_x, F, A
 	decf	start_x, F, A
+	call	key_press
+	movwf	key_bool, A
+	movlw   0x01
+	cpfslt	key_bool, A; don't skip if key is pressed
+	call	loop2
 	movlw	0x03
 	cpfsgt	start_x, A
 	goto	reset1	
 	bra	loop
-;	movlw	0x03
-;	call	set_y
-;	movlw	0x38
-;	call    make_sprite_x
-
 	
-		; goto current line in code
+loop2:
 	
-reset2:
-	call    LcdClear
-	movlw	0x00
-	movwf	start_y, A
-	movlw	0x01
+	call    LcdSelectLeft
+	movlw	0x06
+	call	set_y
+	movf	start_x, W, A
+	call    make_sprite_x
+	movlw	0x2a
 	call	set_x
-	
-loop2:	
-	movf	start_y, W, A
+	movlw	0x26
 	call	make_sprite_y
-	movlw   0x5f
+	movlw	0x05
+	call	set_y
+	movf	start_x, W, A
+	call    make_sprite_x
+	movlw   0x70
 	call	delay_ms
 	call    LcdClear
-	movlw   0x2f
-	call	delay_ms
-	incf	start_y, F, A
-	incf	start_y, F, A
-	incf	start_y, F, A
-	incf	start_y, F, A
-
-
+	movlw   0x20
+	decf	start_x, F, A
+	decf	start_x, F, A
+	decf	start_x, F, A
+	decf	start_x, F, A
+	call	key_press
+	movwf	key_bool, A
+	movlw   0x00
+	cpfsgt	key_bool, A; skip if key is pressed
+	bra	loop
+	movlw	0x03
+	cpfsgt	start_x, A
+	goto	reset1	
 	bra	loop2
 	
 	goto	$
+	
+key_press:	
+	call	key_setup_row
+	movlw	0x01
+	call	key_delay_ms
+	movff	PORTE, keys1	
+	call	key_setup_column
+	movlw	0x01
+	call	key_delay_ms
+	movff	PORTE, keys2
+	movf	keys2, W, A
+	addwf	keys1, F, A
+	movf	keys1, W, A
+	call	decode	
+	return
 	
 delay_ms:		    ; delay given in ms in W
 	movwf	cnt_ms, A

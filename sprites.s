@@ -1,19 +1,22 @@
 #include <xc.inc>
     
-extrn	LcdOpen, LcdSendData, LcdSelectLeft, LcdSelectRight, LcdSetPage, LcdSetRow, LcdDisplayOn, LcdDisplayOff, LcdReset, LcdClear
-global	make_sprite_x, set_y
+extrn	LcdOpen, LcdSendData, LcdSelectLeft, LcdSelectRight, LcdSetPage, LcdSetRow, LcdDisplayOn, LcdDisplayOff, LcdReset, LcdClear, LcdSetStart
+global	make_sprite_x, set_y, set_x, make_sprite_y
     
 psect	udata_acs
-    factor:		 ds      1
-    y_page:		 ds	 1
-    screen_length:	 ds	 1
-    x_coord2:	  ds	 1
-    size_right:	  ds	 1
-    size:         ds     1
-    page_length:  ds	 1
-    x_coord:	  ds	 1
-    y_coord:	  ds	 1
-    y_coord_temp: ds	 1
+    factor:		    ds      1
+    y_page:		    ds	    1
+    screen_length:	    ds	    1
+    x_coord2:		    ds	    1
+    y_coord2:		    ds	    1
+    size_right:		    ds	    1
+    size:		    ds	    1
+    page_length:	    ds	    1
+    x_coord:		    ds	    1
+    y_coord:		    ds	    1
+    y_coord_temp:	    ds	    1
+    sprite_data:	    ds	    1
+    upper_sprite_data:	    ds	    1
     
 psect	sprite_code, class=CODE
 
@@ -108,24 +111,84 @@ divide:
     bra		divide
     return
     
-;make_sprite_y:
-;    movwf	y_coord, A
-;    call	divide8
-;    movlw	0x07
-;    movwf	y_page, A
-;    movf	factor, W, A
-;    subwf	y_page, F, A
-;    movlw	0x40
-;    movwf	page_length, A
-;    movlw	0x08
-;    movwf	size, A
-;    addwf	y_coord, W, A; x2 in W
-;    movwf	y_coord2, A
-;    decf	y_coord2, F, A
-;    movf	y_coord2, W, A
-;    cpfsgt	page_length, A; if 64>x2, skip  (all on left)
-;    bra		right_size
-;    bra		displayleft    
+set_x:
+    movwf	x_coord, A
+    return
+    
+    
+make_sprite_y:
+    movwf	y_coord, A
+    call	divide8
+    movlw	0x07
+    movwf	y_page, A
+    movf	factor, W, A
+    subwf	y_page, F, A
+    movlw	0x40
+    movwf	page_length, A
+    movf	y_coord_temp, W, A
+    movlw	0x08
+    movwf	size, A
+    addwf	y_coord, W, A
+    movwf	y_coord2, A
+    call        LcdSelectLeft
+    movf	x_coord, W, A
+    call        LcdSetRow  
+    call	bottom_page
+    movlw	0x08
+    movwf	size, A
+    movf	x_coord, W, A
+    call        LcdSetRow
+    call	upper_page
+    return
+    
+
+empty_page:
+    movlw	0x00
+    movwf	upper_sprite_data, A
+    movlw	0xff
+    movwf	sprite_data, A
+    movlw	0x00
+    cpfsgt	y_coord_temp, A ;skip if remainder is =0
+    return
+    
+shift:
+    
+    rrncf	sprite_data, F, A
+    movlw	0x80
+    andwf	sprite_data, W, A
+    rrncf	upper_sprite_data, F, A
+    iorwf	upper_sprite_data, F, A
+    movlw	0x7f
+    andwf	sprite_data, F, A
+    decfsz	y_coord_temp, F, A
+    bra		shift
+    return
+    
+bottom_page:	
+    movf	y_page, W, A
+    call	LcdSetPage
+    call	empty_page
+display_bottom:
+    ;movlw	0x10
+    ;call	LcdSetStart
+    movf	sprite_data, W, A
+    call	LcdSendData
+    decfsz      size,F,A
+    bra	        display_bottom
+    return
+    
+upper_page:
+    decf	y_page, W, A
+    call	LcdSetPage
+display_upper:
+    ;movlw	0x10
+    ;call	LcdSetStart
+    movf	upper_sprite_data, W, A
+    call	LcdSendData
+    decfsz      size,F,A
+    bra	        display_upper
+    return    
+    
     
     end
     

@@ -1,13 +1,15 @@
 #include <xc.inc>
 
 extrn	LcdOpen, LcdSendData, LcdSelectLeft, LcdSelectRight, LcdSetPage, LcdSetRow, LcdDisplayOn, LcdDisplayOff, LcdReset, LcdClear, make_sprite_x, set_y
-	
+extrn	set_x, make_sprite_y, LcdSetStart
+
 
 psect	udata_acs   ; named variables in access ram
 cnt_l:	ds 1   ; reserve 1 byte for variable LCD_cnt_l
 cnt_h:	ds 1   ; reserve 1 byte for variable LCD_cnt_h
 cnt_ms:	ds 1   ; reserve 1 byte for ms counter
 start_x: ds 1
+start_y: ds 1
     
 psect	udata_bank4 ; reserve data anywhere in RAM (here at 0x400)
 myArray:    ds 0x80 ; reserve 128 bytes for message data
@@ -28,15 +30,18 @@ setup:	bcf	CFGS	; point to Flash program memory
 	; ******* Main programme ****************************************
 start: 	call	LcdOpen
 	call	LcdDisplayOn
-	movlw	0b10110100
-	movwf	start_x, A
-	rlcf	start_x, W, A
+	bra	reset1
+
+	
+	goto $
 	
 	
 reset1:	
 	call    LcdClear
 	movlw	0x7f
 	movwf	start_x, A
+	movlw	0x00
+	movwf	start_y, A
 	
 loop:	
 	call    LcdSelectLeft
@@ -45,17 +50,28 @@ loop:
 	movf	start_x, W, A
 	;movlw	0x4a
 	call    make_sprite_x
+	movlw	0x2a
+	call	set_x
+	movf	start_y, W, A
+	call	make_sprite_y
 	movlw	0x05
 	call	set_y
 	movf	start_x, W, A
 	;movlw	0x4a
 	call    make_sprite_x
-	movlw   0x20
-	call	delay_ms
-	movlw   0x30
+	movlw   0x70
 	call	delay_ms
 	call    LcdClear
-	decfsz	start_x, F, A
+	movlw   0x20
+	incf	start_y, F, A
+	incf	start_y, F, A
+	decf	start_x, F, A
+	decf	start_x, F, A
+	decf	start_x, F, A
+	decf	start_x, F, A
+	movlw	0x03
+	cpfsgt	start_x, A
+	goto	reset1	
 	bra	loop
 ;	movlw	0x03
 ;	call	set_y
@@ -63,7 +79,32 @@ loop:
 ;	call    make_sprite_x
 
 	
-	goto	reset1		; goto current line in code
+		; goto current line in code
+	
+reset2:
+	call    LcdClear
+	movlw	0x00
+	movwf	start_y, A
+	movlw	0x01
+	call	set_x
+	
+loop2:	
+	movf	start_y, W, A
+	call	make_sprite_y
+	movlw   0x5f
+	call	delay_ms
+	call    LcdClear
+	movlw   0x2f
+	call	delay_ms
+	incf	start_y, F, A
+	incf	start_y, F, A
+	incf	start_y, F, A
+	incf	start_y, F, A
+
+
+	bra	loop2
+	
+	goto	$
 	
 delay_ms:		    ; delay given in ms in W
 	movwf	cnt_ms, A

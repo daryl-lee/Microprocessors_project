@@ -14,6 +14,7 @@ global  LcdSetPage
 global  LcdSetRow
 global  LcdReset
 global  LcdClear
+global	LcdSetStart
  
 LCD_RES_TRIS    equ     TRISB           ; /RES        
  LCD_RES_LAT     equ     LATB
@@ -53,6 +54,7 @@ LCD_RES_TRIS    equ     TRISB           ; /RES
  
  PAGE_NO:         ds     1
  ROW_NO:          ds     1
+ START_NO:	  ds	 1
  counterpixel:	  ds	 1 
  counterpage:	  ds	 1
  rightleft:	  ds	 1
@@ -228,6 +230,12 @@ loop3:		 call    LcdSelectRight
                  andlw   0b00111111
                  movwf   ROW_NO, A
                  iorlw   0b01000000
+                 bra     LcdSendCtrl
+
+LcdSetStart:
+                 andlw   0b00111111
+                 movwf   START_NO, A
+                 iorlw   0b11000000
                  bra     LcdSendCtrl
  
                  end

@@ -66,19 +66,22 @@ loop:
 	movlw   0x70
 	call	delay_ms
 	call    LcdClear
-	movlw   0x20
 	decf	start_x, F, A
 	decf	start_x, F, A
 	decf	start_x, F, A
 	decf	start_x, F, A
+	
+	movlw	0x03
+	cpfsgt	start_x, A
+	goto	reset1
+	
 	call	key_press
 	movwf	key_bool, A
 	movlw   0x01
 	cpfslt	key_bool, A; don't skip if key is pressed
 	call	loop2
-	movlw	0x03
-	cpfsgt	start_x, A
-	goto	reset1	
+	
+	
 	bra	loop
 	
 loop2:
@@ -99,19 +102,21 @@ loop2:
 	movlw   0x70
 	call	delay_ms
 	call    LcdClear
-	movlw   0x20
 	decf	start_x, F, A
 	decf	start_x, F, A
 	decf	start_x, F, A
 	decf	start_x, F, A
+	
+	movlw	0x03
+	cpfsgt	start_x, A
+	goto	reset1	
+	
 	call	key_press
 	movwf	key_bool, A
 	movlw   0x00
 	cpfsgt	key_bool, A; skip if key is pressed
 	bra	loop
-	movlw	0x03
-	cpfsgt	start_x, A
-	goto	reset1	
+	
 	bra	loop2
 	
 	goto	$

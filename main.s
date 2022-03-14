@@ -13,6 +13,10 @@ start_y: ds 1
 keys1:	ds  1
 keys2:	ds  1
 key_bool: ds 1
+distance:   ds 1
+t1_x1: ds 1
+t2_x1: ds 1
+display_distance:   ds 1
     
 psect	udata_bank4 ; reserve data anywhere in RAM (here at 0x400)
 myArray:    ds 0x80 ; reserve 128 bytes for message data
@@ -35,23 +39,29 @@ setup:	bcf	CFGS	; point to Flash program memory
 	; ******* Main programme ****************************************
 start: 	call	LcdOpen
 	call	LcdDisplayOn
-	bra	reset1
+	bra	init
 
 	
 	goto $
 	
 	
-reset1:	
+init:	
 	call    LcdClear
+	movlw	0x18
+	movwf	distance, A ;min distance between trees
 	movlw	0x7f
-	movwf	start_x, A
+	movwf	t1_x1, A
+	movwf	display_distance, A
+	movlw	0x8f
+	addwf	distance, W, A
+	movwf	t2_x1, A
 	movlw	0x08
 	movwf	start_y, A
 	
 loop:	
     
 	call    LcdSelectLeft
-	call	make_tree
+	call	make_trees
 	movlw	0x2a
 	call	set_x
 	movf	start_y, W, A
@@ -59,27 +69,24 @@ loop:
 	movlw   0x70
 	call	delay_ms
 	call    LcdClear
-	decf	start_x, F, A
-	decf	start_x, F, A
-	decf	start_x, F, A
-	decf	start_x, F, A
+	call	move_trees
 	
 	movlw	0x03
-	cpfsgt	start_x, A
-	goto	reset1
+	cpfsgt	t1_x1, A
+	call	reset1
 	
 	call	key_press
 	movwf	key_bool, A
 	movlw   0x01
 	cpfslt	key_bool, A; don't skip if key is pressed
-	call	loop2
+	call	jump
 	
 	
 	bra	loop
 	
-loop2:
+jump:
 	call    LcdSelectLeft
-	call	make_tree
+	call	make_trees
 	movlw	0x2a
 	call	set_x
 	movlw	0x12
@@ -87,18 +94,15 @@ loop2:
 	movlw   0x70
 	call	delay_ms
 	call    LcdClear
-	decf	start_x, F, A
-	decf	start_x, F, A
-	decf	start_x, F, A
-	decf	start_x, F, A
+	call	move_trees
 	
 	movlw	0x03
-	cpfsgt	start_x, A
-	call	reset2	
+	cpfsgt	t1_x1, A
+	call	reset1	
     
     
 	call    LcdSelectLeft
-	call	make_tree
+	call	make_trees
 	movlw	0x2a
 	call	set_x
 	movlw	0x1b
@@ -106,17 +110,14 @@ loop2:
 	movlw   0x70
 	call	delay_ms
 	call    LcdClear
-	decf	start_x, F, A
-	decf	start_x, F, A
-	decf	start_x, F, A
-	decf	start_x, F, A
+	call	move_trees
 	
 	movlw	0x03
-	cpfsgt	start_x, A
-	call	reset2	
+	cpfsgt	t1_x1, A
+	call	reset1	
 	
 	call    LcdSelectLeft
-	call	make_tree
+	call	make_trees
 	movlw	0x2a
 	call	set_x
 	movlw	0x20
@@ -124,18 +125,15 @@ loop2:
 	movlw   0x70
 	call	delay_ms
 	call    LcdClear
-	decf	start_x, F, A
-	decf	start_x, F, A
-	decf	start_x, F, A
-	decf	start_x, F, A
+	call	move_trees
 	
 	movlw	0x03
-	cpfsgt	start_x, A
-	call	reset2
+	cpfsgt	t1_x1, A
+	call	reset1
 	
 	
 	call    LcdSelectLeft
-	call	make_tree
+	call	make_trees
 	movlw	0x2a
 	call	set_x
 	movlw	0x26
@@ -143,17 +141,14 @@ loop2:
 	movlw   0x70
 	call	delay_ms
 	call    LcdClear
-	decf	start_x, F, A
-	decf	start_x, F, A
-	decf	start_x, F, A
-	decf	start_x, F, A
+	call	move_trees
 	
 	movlw	0x03
-	cpfsgt	start_x, A
-	call	reset2
+	cpfsgt	t1_x1, A
+	call	reset1
 	
 	call    LcdSelectLeft
-	call	make_tree
+	call	make_trees
 	movlw	0x2a
 	call	set_x
 	movlw	0x26
@@ -161,17 +156,14 @@ loop2:
 	movlw   0x70
 	call	delay_ms
 	call    LcdClear
-	decf	start_x, F, A
-	decf	start_x, F, A
-	decf	start_x, F, A
-	decf	start_x, F, A
+	call	move_trees
 	
 	movlw	0x03
-	cpfsgt	start_x, A
-	call	reset2
+	cpfsgt	t1_x1, A
+	call	reset1
 	
 	call    LcdSelectLeft
-	call	make_tree
+	call	make_trees
 	movlw	0x2a
 	call	set_x
 	movlw	0x20
@@ -179,17 +171,14 @@ loop2:
 	movlw   0x70
 	call	delay_ms
 	call    LcdClear
-	decf	start_x, F, A
-	decf	start_x, F, A
-	decf	start_x, F, A
-	decf	start_x, F, A
+	call	move_trees
 	
 	movlw	0x03
-	cpfsgt	start_x, A
-	call	reset2
+	cpfsgt	t1_x1, A
+	call	reset1
 	
 	call    LcdSelectLeft
-	call	make_tree
+	call	make_trees
 	movlw	0x2a
 	call	set_x
 	movlw	0x1b
@@ -197,17 +186,14 @@ loop2:
 	movlw   0x70
 	call	delay_ms
 	call    LcdClear
-	decf	start_x, F, A
-	decf	start_x, F, A
-	decf	start_x, F, A
-	decf	start_x, F, A
+	call	move_trees
 	
 	movlw	0x03
-	cpfsgt	start_x, A
-	call	reset2	
+	cpfsgt	t1_x1, A
+	call	reset1	
 	
 	call    LcdSelectLeft
-	call	make_tree
+	call	make_trees
 	movlw	0x2a
 	call	set_x
 	movlw	0x12
@@ -215,22 +201,20 @@ loop2:
 	movlw   0x70
 	call	delay_ms
 	call    LcdClear
-	decf	start_x, F, A
-	decf	start_x, F, A
-	decf	start_x, F, A
-	decf	start_x, F, A
+	call	move_trees
 	
 	movlw	0x03
-	cpfsgt	start_x, A
-	call	reset2	
+	cpfsgt	t1_x1, A
+	call	reset1	
 	
 	bra	loop
 	
 	goto	$
 	
-reset2:
-	movlw	0x7f
-	movwf	start_x, A
+reset1:
+	movff	t2_x1, t1_x1
+	movlw	0x93
+	movwf	t2_x1, A
 	return	
 	
 key_press:	
@@ -275,15 +259,42 @@ delay_sub1:
 	bc 	delay_sub1		; carry, then loop again
 	return	
 	
-make_tree:
+make_trees:
 	movlw	0x06
 	call	set_y
-	movf	start_x, W, A
+	movf	t1_x1, W, A
+	cpfslt	display_distance, A
 	call    make_sprite_x
 	movlw	0x05
 	call	set_y
-	movf	start_x, W, A
+	movf	t1_x1, W, A
+	cpfslt	display_distance, A
 	call    make_sprite_x
+	
+	movlw	0x06
+	call	set_y
+	movf	t2_x1, W, A
+	cpfslt	display_distance, A
+	call    make_sprite_x
+	movlw	0x05
+	call	set_y
+	movf	t2_x1, W, A
+	cpfslt	display_distance, A
+	call    make_sprite_x
+	
+	return
+	
+	
+move_trees:
+	decf	t1_x1, F, A
+	decf	t1_x1, F, A
+	decf	t1_x1, F, A
+	decf	t1_x1, F, A
+	decf	t2_x1, F, A
+	decf	t2_x1, F, A
+	decf	t2_x1, F, A
+	decf	t2_x1, F, A
+	
 	return
 
 	end	rst

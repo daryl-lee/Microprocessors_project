@@ -1,8 +1,8 @@
 #include <xc.inc>
 
 extrn	LcdOpen, LcdSendData, LcdSelectLeft, LcdSelectRight, LcdSetPage, LcdSetRow, LcdDisplayOn, LcdDisplayOff, LcdReset, LcdClear, make_sprite_x, set_y
-extrn	set_x, make_sprite_y, LcdSetStart, key_setup, key_setup_column, key_delay_ms, key_setup_row, decode
-
+extrn	set_x, make_sprite_y, LcdSetStart, key_setup, key_setup_column, key_delay_ms, key_setup_row, decode, collision
+global	t1_x1, t2_x1, d_y1
 
 psect	udata_acs   ; named variables in access ram
 cnt_l:	ds 1   ; reserve 1 byte for variable LCD_cnt_l
@@ -16,6 +16,7 @@ key_bool: ds 1
 distance:   ds 1
 t1_x1: ds 1
 t2_x1: ds 1
+d_y1:  ds 1
 display_distance:   ds 1
     
 psect	udata_bank4 ; reserve data anywhere in RAM (here at 0x400)
@@ -34,6 +35,7 @@ setup:	bcf	CFGS	; point to Flash program memory
 	call	LcdOpen	; setup glcd
 	call	key_setup
 	
+	
 	goto	start
 	
 	; ******* Main programme ****************************************
@@ -51,7 +53,7 @@ init:
 	movwf	distance, A ;min distance between trees
 	movlw	0x7f
 	movwf	t1_x1, A
-	movwf	display_distance, A
+	movwf	display_distance, A ;127
 	movlw	0x8f
 	addwf	distance, W, A
 	movwf	t2_x1, A
@@ -64,6 +66,7 @@ loop:
 	call	make_trees
 	movlw	0x2a
 	call	set_x
+	movff	start_y, d_y1
 	movf	start_y, W, A
 	call	make_sprite_y
 	movlw   0x70
@@ -89,7 +92,8 @@ jump:
 	call	make_trees
 	movlw	0x2a
 	call	set_x
-	movlw	0x12
+	movlw	0x14
+	movwf	d_y1, A
 	call	make_sprite_y
 	movlw   0x70
 	call	delay_ms
@@ -106,6 +110,7 @@ jump:
 	movlw	0x2a
 	call	set_x
 	movlw	0x1b
+	movwf	d_y1, A
 	call	make_sprite_y
 	movlw   0x70
 	call	delay_ms
@@ -120,7 +125,8 @@ jump:
 	call	make_trees
 	movlw	0x2a
 	call	set_x
-	movlw	0x20
+	movlw	0x22
+	movwf	d_y1, A
 	call	make_sprite_y
 	movlw   0x70
 	call	delay_ms
@@ -137,6 +143,7 @@ jump:
 	movlw	0x2a
 	call	set_x
 	movlw	0x26
+	movwf	d_y1, A
 	call	make_sprite_y
 	movlw   0x70
 	call	delay_ms
@@ -152,6 +159,7 @@ jump:
 	movlw	0x2a
 	call	set_x
 	movlw	0x26
+	movwf	d_y1, A
 	call	make_sprite_y
 	movlw   0x70
 	call	delay_ms
@@ -166,7 +174,8 @@ jump:
 	call	make_trees
 	movlw	0x2a
 	call	set_x
-	movlw	0x20
+	movlw	0x22
+	movwf	d_y1, A
 	call	make_sprite_y
 	movlw   0x70
 	call	delay_ms
@@ -182,6 +191,7 @@ jump:
 	movlw	0x2a
 	call	set_x
 	movlw	0x1b
+	movwf	d_y1, A
 	call	make_sprite_y
 	movlw   0x70
 	call	delay_ms
@@ -196,7 +206,8 @@ jump:
 	call	make_trees
 	movlw	0x2a
 	call	set_x
-	movlw	0x12
+	movlw	0x14
+	movwf	d_y1, A
 	call	make_sprite_y
 	movlw   0x70
 	call	delay_ms

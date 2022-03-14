@@ -51,18 +51,11 @@ reset1:
 loop:	
     
 	call    LcdSelectLeft
-	movlw	0x06
-	call	set_y
-	movf	start_x, W, A
-	call    make_sprite_x
+	call	make_tree
 	movlw	0x2a
 	call	set_x
 	movf	start_y, W, A
 	call	make_sprite_y
-	movlw	0x05
-	call	set_y
-	movf	start_x, W, A
-	call    make_sprite_x
 	movlw   0x70
 	call	delay_ms
 	call    LcdClear
@@ -85,20 +78,12 @@ loop:
 	bra	loop
 	
 loop2:
-	
 	call    LcdSelectLeft
-	movlw	0x06
-	call	set_y
-	movf	start_x, W, A
-	call    make_sprite_x
+	call	make_tree
 	movlw	0x2a
 	call	set_x
-	movlw	0x26
+	movlw	0x12
 	call	make_sprite_y
-	movlw	0x05
-	call	set_y
-	movf	start_x, W, A
-	call    make_sprite_x
 	movlw   0x70
 	call	delay_ms
 	call    LcdClear
@@ -109,17 +94,144 @@ loop2:
 	
 	movlw	0x03
 	cpfsgt	start_x, A
-	goto	reset1	
+	call	reset2	
+    
+    
+	call    LcdSelectLeft
+	call	make_tree
+	movlw	0x2a
+	call	set_x
+	movlw	0x1b
+	call	make_sprite_y
+	movlw   0x70
+	call	delay_ms
+	call    LcdClear
+	decf	start_x, F, A
+	decf	start_x, F, A
+	decf	start_x, F, A
+	decf	start_x, F, A
 	
-	call	key_press
-	movwf	key_bool, A
-	movlw   0x00
-	cpfsgt	key_bool, A; skip if key is pressed
+	movlw	0x03
+	cpfsgt	start_x, A
+	call	reset2	
+	
+	call    LcdSelectLeft
+	call	make_tree
+	movlw	0x2a
+	call	set_x
+	movlw	0x20
+	call	make_sprite_y
+	movlw   0x70
+	call	delay_ms
+	call    LcdClear
+	decf	start_x, F, A
+	decf	start_x, F, A
+	decf	start_x, F, A
+	decf	start_x, F, A
+	
+	movlw	0x03
+	cpfsgt	start_x, A
+	call	reset2
+	
+	
+	call    LcdSelectLeft
+	call	make_tree
+	movlw	0x2a
+	call	set_x
+	movlw	0x26
+	call	make_sprite_y
+	movlw   0x70
+	call	delay_ms
+	call    LcdClear
+	decf	start_x, F, A
+	decf	start_x, F, A
+	decf	start_x, F, A
+	decf	start_x, F, A
+	
+	movlw	0x03
+	cpfsgt	start_x, A
+	call	reset2
+	
+	call    LcdSelectLeft
+	call	make_tree
+	movlw	0x2a
+	call	set_x
+	movlw	0x26
+	call	make_sprite_y
+	movlw   0x70
+	call	delay_ms
+	call    LcdClear
+	decf	start_x, F, A
+	decf	start_x, F, A
+	decf	start_x, F, A
+	decf	start_x, F, A
+	
+	movlw	0x03
+	cpfsgt	start_x, A
+	call	reset2
+	
+	call    LcdSelectLeft
+	call	make_tree
+	movlw	0x2a
+	call	set_x
+	movlw	0x20
+	call	make_sprite_y
+	movlw   0x70
+	call	delay_ms
+	call    LcdClear
+	decf	start_x, F, A
+	decf	start_x, F, A
+	decf	start_x, F, A
+	decf	start_x, F, A
+	
+	movlw	0x03
+	cpfsgt	start_x, A
+	call	reset2
+	
+	call    LcdSelectLeft
+	call	make_tree
+	movlw	0x2a
+	call	set_x
+	movlw	0x1b
+	call	make_sprite_y
+	movlw   0x70
+	call	delay_ms
+	call    LcdClear
+	decf	start_x, F, A
+	decf	start_x, F, A
+	decf	start_x, F, A
+	decf	start_x, F, A
+	
+	movlw	0x03
+	cpfsgt	start_x, A
+	call	reset2	
+	
+	call    LcdSelectLeft
+	call	make_tree
+	movlw	0x2a
+	call	set_x
+	movlw	0x12
+	call	make_sprite_y
+	movlw   0x70
+	call	delay_ms
+	call    LcdClear
+	decf	start_x, F, A
+	decf	start_x, F, A
+	decf	start_x, F, A
+	decf	start_x, F, A
+	
+	movlw	0x03
+	cpfsgt	start_x, A
+	call	reset2	
+	
 	bra	loop
 	
-	bra	loop2
-	
 	goto	$
+	
+reset2:
+	movlw	0x7f
+	movwf	start_x, A
+	return	
 	
 key_press:	
 	call	key_setup_row
@@ -162,5 +274,16 @@ delay_sub1:
 	subwfb 	cnt_h, F, A	; no carry when 0x00 -> 0xff
 	bc 	delay_sub1		; carry, then loop again
 	return	
+	
+make_tree:
+	movlw	0x06
+	call	set_y
+	movf	start_x, W, A
+	call    make_sprite_x
+	movlw	0x05
+	call	set_y
+	movf	start_x, W, A
+	call    make_sprite_x
+	return
 
 	end	rst

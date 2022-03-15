@@ -2,6 +2,7 @@
 
 extrn	LcdOpen, LcdSendData, LcdSelectLeft, LcdSelectRight, LcdSetPage, LcdSetRow, LcdDisplayOn, LcdDisplayOff, LcdReset, LcdClear, make_sprite_x, set_y
 extrn	set_x, make_sprite_y, LcdSetStart, key_setup, key_setup_column, key_delay_ms, key_setup_row, decode, collision_t1, collision_t2
+extrn	load_data_A, load_data_E, load_data_G , load_data_M, load_data_O, load_data_R, load_data_V, load_data_treetop, load_data_treebottom
 global	t1_x1, t2_x1, d_y1
 
 psect	udata_acs   ; named variables in access ram
@@ -292,22 +293,26 @@ delay_sub1:
 make_trees:
 	movlw	0x06
 	call	set_y
+	call	load_data_treebottom
 	movf	t1_x1, W, A
 	cpfslt	display_distance, A	; display tree if x is less than 127
 	call    make_sprite_x
 	movlw	0x05
 	call	set_y
+	call	load_data_treetop
 	movf	t1_x1, W, A
 	cpfslt	display_distance, A
 	call    make_sprite_x
 	
 	movlw	0x06
 	call	set_y
+	call	load_data_treebottom
 	movf	t2_x1, W, A
 	cpfslt	display_distance, A
 	call    make_sprite_x
 	movlw	0x05
 	call	set_y
+	call	load_data_treetop
 	movf	t2_x1, W, A
 	cpfslt	display_distance, A
 	call    make_sprite_x
@@ -332,14 +337,14 @@ collision_check:
 	
 	movwf	collision_bool, A
 	movlw   0x01
-	cpfslt	collision_bool, A
+	cpfslt	collision_bool, A ;skip if no collision (W=0x00)
 	call	game_over
 	
 	call	collision_t2
 	
 	movwf	collision_bool, A
 	movlw   0x01
-	cpfslt	collision_bool, A
+	cpfslt	collision_bool, A ;skip if no collision (W=0x00)
 	call	game_over
 	return
 	
@@ -351,7 +356,44 @@ game_over:
 	
 	movlw	0x02
 	call	set_y
-	movlw	0x20
+	call	load_data_G
+	movlw	0x32
+	call	make_sprite_x
+	
+	
+	call	load_data_A
+	movlw	0x3a
+	call	make_sprite_x
+	
+	
+	call	load_data_M
+	movlw	0x42
+	call	make_sprite_x
+	
+	
+	call	load_data_E
+	movlw	0x4a
+	call	make_sprite_x
+	
+	movlw	0x03
+	call	set_y
+	call	load_data_O
+	movlw	0x32
+	call	make_sprite_x
+	
+	
+	call	load_data_V
+	movlw	0x3a
+	call	make_sprite_x
+	
+	
+	call	load_data_E
+	movlw	0x42
+	call	make_sprite_x
+	
+	
+	call	load_data_R
+	movlw	0x4a
 	call	make_sprite_x
 	
 	goto	$

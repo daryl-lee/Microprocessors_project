@@ -1,7 +1,7 @@
 #include <xc.inc>
 
 extrn	LcdOpen, LcdSendData, LcdSelectLeft, LcdSelectRight, LcdSetPage, LcdSetRow, LcdDisplayOn, LcdDisplayOff, LcdReset, LcdClear, make_sprite_x, set_y
-extrn	set_x, make_sprite_y, LcdSetStart, key_setup, key_setup_column, key_delay_ms, key_setup_row, decode, collision
+extrn	set_x, make_sprite_y, LcdSetStart, key_setup, key_setup_column, key_delay_ms, key_setup_row, decode, collision_t1, collision_t2
 global	t1_x1, t2_x1, d_y1
 
 psect	udata_acs   ; named variables in access ram
@@ -72,12 +72,7 @@ loop:
 	call	make_sprite_y
 	movlw   0x70
 	call	delay_ms
-	call	collision
-	
-	movwf	collision_bool, A
-	movlw   0x01
-	cpfslt	collision_bool, A
-	call	game_over
+	call	collision_check
 	
 	call    LcdClear
 	call	move_trees
@@ -105,6 +100,8 @@ jump:
 	call	make_sprite_y
 	movlw   0x70
 	call	delay_ms
+	call	collision_check
+	
 	call    LcdClear
 	call	move_trees
 	
@@ -122,6 +119,8 @@ jump:
 	call	make_sprite_y
 	movlw   0x70
 	call	delay_ms
+	call	collision_check
+	
 	call    LcdClear
 	call	move_trees
 	
@@ -138,6 +137,8 @@ jump:
 	call	make_sprite_y
 	movlw   0x70
 	call	delay_ms
+	call	collision_check
+	
 	call    LcdClear
 	call	move_trees
 	
@@ -155,6 +156,8 @@ jump:
 	call	make_sprite_y
 	movlw   0x70
 	call	delay_ms
+	call	collision_check
+	
 	call    LcdClear
 	call	move_trees
 	
@@ -171,6 +174,8 @@ jump:
 	call	make_sprite_y
 	movlw   0x70
 	call	delay_ms
+	call	collision_check
+	
 	call    LcdClear
 	call	move_trees
 	
@@ -187,6 +192,8 @@ jump:
 	call	make_sprite_y
 	movlw   0x70
 	call	delay_ms
+	call	collision_check
+	
 	call    LcdClear
 	call	move_trees
 	
@@ -203,6 +210,8 @@ jump:
 	call	make_sprite_y
 	movlw   0x70
 	call	delay_ms
+	call	collision_check
+	
 	call    LcdClear
 	call	move_trees
 	
@@ -219,6 +228,8 @@ jump:
 	call	make_sprite_y
 	movlw   0x70
 	call	delay_ms
+	call	collision_check
+	
 	call    LcdClear
 	call	move_trees
 	
@@ -314,6 +325,22 @@ move_trees:
 	decf	t2_x1, F, A
 	decf	t2_x1, F, A
 	
+	return
+	
+collision_check:
+	call	collision_t1
+	
+	movwf	collision_bool, A
+	movlw   0x01
+	cpfslt	collision_bool, A
+	call	game_over
+	
+	call	collision_t2
+	
+	movwf	collision_bool, A
+	movlw   0x01
+	cpfslt	collision_bool, A
+	call	game_over
 	return
 	
 game_over:

@@ -38,7 +38,7 @@ myTable_treebottom:
 	db	0b00000000, 0b00000000, 0b00000100, 0b11111111, 0b11111111, 0b00000010, 0b00000011, 0b00000000
 	
 myTable_dino:
-	db	0b00000000, 0b00000000, 0b00000100, 0b11111111, 0b11111111, 0b00000010, 0b00000011, 0b00000000
+	db	0b00011000, 0b11110000, 0b01110000, 0b01110000, 0b11110000, 0b00111111, 0b00000101, 0b00000111
 	
 	
 					; message, plus carriage return
@@ -142,6 +142,17 @@ load_data_treebottom: 	lfsr	0, myArray	; Load FSR0 with address in RAM
 		movlw	high(myTable_treebottom)	; address of data in PM
 		movwf	TBLPTRH, A		; load high byte to TBLPTRH
 		movlw	low(myTable_treebottom)	; address of data in PM
+		movwf	TBLPTRL, A		; load low byte to TBLPTRL
+		movlw	myTable_l	; bytes to read
+		movwf 	counter, A		; our counter register
+		bra	loop
+		
+load_data_dino: 	lfsr	0, myArray	; Load FSR0 with address in RAM	
+		movlw	low highword(myTable_dino)	; address of data in PM
+		movwf	TBLPTRU, A		; load upper bits to TBLPTRU
+		movlw	high(myTable_dino)	; address of data in PM
+		movwf	TBLPTRH, A		; load high byte to TBLPTRH
+		movlw	low(myTable_dino)	; address of data in PM
 		movwf	TBLPTRL, A		; load low byte to TBLPTRL
 		movlw	myTable_l	; bytes to read
 		movwf 	counter, A		; our counter register

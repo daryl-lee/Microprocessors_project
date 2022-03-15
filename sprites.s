@@ -147,7 +147,8 @@ make_sprite_y:
 empty_page:
     movlw	0x00
     movwf	upper_sprite_data, A
-    movlw	0xff
+    movf	POSTINC2, W, A
+    ;movlw	0xff
     movwf	sprite_data, A
     movlw	0x00
     cpfsgt	y_coord_temp, A ;skip if remainder is =0
@@ -169,8 +170,9 @@ shift:
 bottom_page:	
     movf	y_page, W, A
     call	LcdSetPage
-    call	empty_page
+    ;call	empty_page
 display_bottom:
+    call	empty_page
     ;movlw	0x10
     ;call	LcdSetStart
     movf	sprite_data, W, A

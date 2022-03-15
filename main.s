@@ -18,6 +18,7 @@ t1_x1: ds 1
 t2_x1: ds 1
 d_y1:  ds 1
 display_distance:   ds 1
+collision_bool:     ds 1
     
 psect	udata_bank4 ; reserve data anywhere in RAM (here at 0x400)
 myArray:    ds 0x80 ; reserve 128 bytes for message data
@@ -71,6 +72,13 @@ loop:
 	call	make_sprite_y
 	movlw   0x70
 	call	delay_ms
+	call	collision
+	
+	movwf	collision_bool, A
+	movlw   0x01
+	cpfslt	collision_bool, A
+	call	game_over
+	
 	call    LcdClear
 	call	move_trees
 	
@@ -274,7 +282,7 @@ make_trees:
 	movlw	0x06
 	call	set_y
 	movf	t1_x1, W, A
-	cpfslt	display_distance, A
+	cpfslt	display_distance, A	; display tree if x is less than 127
 	call    make_sprite_x
 	movlw	0x05
 	call	set_y
@@ -307,5 +315,20 @@ move_trees:
 	decf	t2_x1, F, A
 	
 	return
+	
+game_over:
+	call    LcdClear
+	call	LcdOpen
+	call	LcdDisplayOn
+	call    LcdClear
+	
+	movlw	0x02
+	call	set_y
+	movlw	0x20
+	call	make_sprite_x
+	
+	goto	$
+	
+	
 
 	end	rst

@@ -81,7 +81,9 @@ set_page:
     movf	y_page, W, A
     call	LcdSetPage
 display:
-    movlw	0xff
+    
+    movf	POSTINC2, W, A
+    ;movlw	0xff
     call	LcdSendData
     decfsz      size,F,A
     ;movf	size, W, A

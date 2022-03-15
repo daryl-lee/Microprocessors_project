@@ -2,7 +2,7 @@
 
 extrn	LcdOpen, LcdSendData, LcdSelectLeft, LcdSelectRight, LcdSetPage, LcdSetRow, LcdDisplayOn, LcdDisplayOff, LcdReset, LcdClear, make_sprite_x, set_y
 extrn	set_x, make_sprite_y, LcdSetStart, key_setup, key_setup_column, key_delay_ms, key_setup_row, decode, collision_t1, collision_t2
-extrn	load_data_A, load_data_E, load_data_G , load_data_M, load_data_O, load_data_R, load_data_V, load_data_treetop, load_data_treebottom
+extrn	load_data_A, load_data_E, load_data_G , load_data_M, load_data_O, load_data_R, load_data_V, load_data_treetop, load_data_treebottom, load_data_dino
 global	t1_x1, t2_x1, d_y1
 
 psect	udata_acs   ; named variables in access ram
@@ -68,6 +68,8 @@ loop:
 	call	make_trees
 	movlw	0x2a
 	call	set_x
+	
+	call	load_data_dino
 	movff	start_y, d_y1
 	movf	start_y, W, A
 	call	make_sprite_y
@@ -96,6 +98,8 @@ jump:
 	call	make_trees
 	movlw	0x2a
 	call	set_x
+	
+	call    load_data_dino
 	movlw	0x14
 	movwf	d_y1, A
 	call	make_sprite_y
@@ -115,6 +119,8 @@ jump:
 	call	make_trees
 	movlw	0x2a
 	call	set_x
+	
+	call    load_data_dino
 	movlw	0x1b
 	movwf	d_y1, A
 	call	make_sprite_y
@@ -133,6 +139,8 @@ jump:
 	call	make_trees
 	movlw	0x2a
 	call	set_x
+	
+	call    load_data_dino
 	movlw	0x22
 	movwf	d_y1, A
 	call	make_sprite_y
@@ -152,6 +160,8 @@ jump:
 	call	make_trees
 	movlw	0x2a
 	call	set_x
+	
+	call    load_data_dino
 	movlw	0x26
 	movwf	d_y1, A
 	call	make_sprite_y
@@ -170,6 +180,8 @@ jump:
 	call	make_trees
 	movlw	0x2a
 	call	set_x
+	
+	call    load_data_dino
 	movlw	0x26
 	movwf	d_y1, A
 	call	make_sprite_y
@@ -188,6 +200,8 @@ jump:
 	call	make_trees
 	movlw	0x2a
 	call	set_x
+	
+	call    load_data_dino
 	movlw	0x22
 	movwf	d_y1, A
 	call	make_sprite_y
@@ -206,6 +220,8 @@ jump:
 	call	make_trees
 	movlw	0x2a
 	call	set_x
+	
+	call    load_data_dino
 	movlw	0x1b
 	movwf	d_y1, A
 	call	make_sprite_y
@@ -224,6 +240,8 @@ jump:
 	call	make_trees
 	movlw	0x2a
 	call	set_x
+	
+	call    load_data_dino
 	movlw	0x14
 	movwf	d_y1, A
 	call	make_sprite_y

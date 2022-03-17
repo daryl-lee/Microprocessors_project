@@ -20,6 +20,7 @@ t2_x1: ds 1
 d_y1:  ds 1
 display_distance:   ds 1
 collision_bool:     ds 1
+seed:		    ds 1
     
 psect	udata_bank4 ; reserve data anywhere in RAM (here at 0x400)
 myArray:    ds 0x80 ; reserve 128 bytes for message data
@@ -36,6 +37,7 @@ setup:	bcf	CFGS	; point to Flash program memory
 	
 	call	LcdOpen	; setup glcd
 	call	key_setup
+	call	random_setup
 	
 	
 	goto	start
@@ -61,6 +63,10 @@ init:
 	movwf	t2_x1, A
 	movlw	0x08
 	movwf	start_y, A
+
+startup:
+    
+	
 	
 loop:	
     

@@ -25,6 +25,7 @@ seed:		    ds 1
 start_counter:	    ds 1
 short_seed:	    ds 1
 min_dist:	    ds 1
+delay_time:	    ds 1
     
 psect	udata_bank4 ; reserve data anywhere in RAM (here at 0x400)
 myArray:    ds 0x80 ; reserve 128 bytes for message data
@@ -67,6 +68,8 @@ init:
 	movwf	t2_x1, A
 	movlw	0x08
 	movwf	start_y, A
+	movlw   0x50
+	movwf	delay_time, A
 
 startup:
 	movlw	0x00
@@ -107,7 +110,7 @@ loop:
 	movff	start_y, d_y1
 	movf	start_y, W, A
 	call	make_sprite_y
-	movlw   0x70
+	movf	delay_time, W, A
 	call	delay_ms
 	call	collision_check
 	
@@ -137,7 +140,7 @@ jump:
 	movlw	0x14
 	movwf	d_y1, A
 	call	make_sprite_y
-	movlw   0x70
+	movf	delay_time, W, A
 	call	delay_ms
 	call	collision_check
 	
@@ -158,7 +161,7 @@ jump:
 	movlw	0x1b
 	movwf	d_y1, A
 	call	make_sprite_y
-	movlw   0x70
+	movf	delay_time, W, A
 	call	delay_ms
 	call	collision_check
 	
@@ -178,7 +181,7 @@ jump:
 	movlw	0x22
 	movwf	d_y1, A
 	call	make_sprite_y
-	movlw   0x70
+	movf	delay_time, W, A
 	call	delay_ms
 	call	collision_check
 	
@@ -199,7 +202,7 @@ jump:
 	movlw	0x26
 	movwf	d_y1, A
 	call	make_sprite_y
-	movlw   0x70
+	movf	delay_time, W, A
 	call	delay_ms
 	call	collision_check
 	
@@ -219,7 +222,7 @@ jump:
 	movlw	0x26
 	movwf	d_y1, A
 	call	make_sprite_y
-	movlw   0x70
+	movf	delay_time, W, A
 	call	delay_ms
 	call	collision_check
 	
@@ -239,7 +242,7 @@ jump:
 	movlw	0x22
 	movwf	d_y1, A
 	call	make_sprite_y
-	movlw   0x70
+	movf	delay_time, W, A
 	call	delay_ms
 	call	collision_check
 	
@@ -259,7 +262,7 @@ jump:
 	movlw	0x1b
 	movwf	d_y1, A
 	call	make_sprite_y
-	movlw   0x70
+	movf	delay_time, W, A
 	call	delay_ms
 	call	collision_check
 	
@@ -279,7 +282,7 @@ jump:
 	movlw	0x14
 	movwf	d_y1, A
 	call	make_sprite_y
-	movlw   0x70
+	movf	delay_time, W, A
 	call	delay_ms
 	call	collision_check
 	

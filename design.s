@@ -1,7 +1,8 @@
 #include <xc.inc>
     
 global	load_data_A, load_data_E, load_data_G , load_data_M, load_data_O, load_data_R, load_data_V, load_data_treetop, load_data_treebottom, load_data_dino
-
+global	load_data_0, load_data_1, load_data_2, load_data_3, load_data_4, load_data_5, load_data_6 , load_data_7, load_data_8, load_data_9
+    
 psect	udata_acs   ; reserve data space in access ram
 counter:    ds 1
     
@@ -43,7 +44,7 @@ myTable_dino:
 myTable_0:
 	db	0b00000000, 0b01111100, 0b10000010, 0b10000010, 0b10000010, 0b10000010, 0b01111100, 0b00000000	
 	
-myTable_one:
+myTable_1:
 	db	0b00000000, 0b10000000, 0b10000100, 0b11111110, 0b11111110, 0b10000000, 0b10000000, 0b00000000	
 	
 myTable_2:
@@ -72,7 +73,7 @@ myTable_9:
 	
 	
 			
-	myTable_l   EQU	8	; length of data
+	myTable_l   EQU	8	; length of data, this is myTable_L not "one"
 	align	2
     
 psect	design_code, class=CODE
@@ -200,12 +201,12 @@ load_data_0: 	lfsr	0, myArray	; Load FSR0 with address in RAM
 		movwf 	counter, A		; our counter register
 		bra	loop
 		
-load_data_one: 	lfsr	0, myArray	; Load FSR0 with address in RAM	
-		movlw	low highword(myTable_one)	; address of data in PM
+load_data_1: 	lfsr	0, myArray	; Load FSR0 with address in RAM	
+		movlw	low highword(myTable_1)	; address of data in PM
 		movwf	TBLPTRU, A		; load upper bits to TBLPTRU
-		movlw	high(myTable_one)	; address of data in PM
+		movlw	high(myTable_1)	; address of data in PM
 		movwf	TBLPTRH, A		; load high byte to TBLPTRH
-		movlw	low(myTable_one)	; address of data in PM
+		movlw	low(myTable_1)	; address of data in PM
 		movwf	TBLPTRL, A		; load low byte to TBLPTRL
 		movlw	myTable_l	; bytes to read
 		movwf 	counter, A		; our counter register

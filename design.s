@@ -40,8 +40,38 @@ myTable_treebottom:
 myTable_dino:
 	db	0b00011000, 0b11110000, 0b01110000, 0b01110000, 0b11110000, 0b00111111, 0b00000101, 0b00000111
 	
+myTable_0:
+	db	0b00000000, 0b01111100, 0b10000010, 0b10000010, 0b10000010, 0b10000010, 0b01111100, 0b00000000	
 	
-					; message, plus carriage return
+myTable_one:
+	db	0b00000000, 0b10000000, 0b10000100, 0b11111110, 0b11111110, 0b10000000, 0b10000000, 0b00000000	
+	
+myTable_2:
+	db	0b00000000, 0b11000100, 0b10100010, 0b10010010, 0b10010010, 0b10010010, 0b10001100, 0b00000000	
+	
+myTable_3:
+	db	0b00000000, 0b01000100, 0b10010010, 0b10010010, 0b10010010, 0b10010010, 0b01101100, 0b00000000
+	
+myTable_4:
+	db	0b00000000, 0b00001110, 0b00010000, 0b00010000, 0b00010000, 0b11111110, 0b00010000, 0b00000000	
+	
+myTable_5:
+	db	0b00000000, 0b01001110, 0b10001010, 0b10001010, 0b10001010, 0b10001010, 0b01110010, 0b00000000	
+	
+myTable_6:
+	db	0b00000000, 0b01111100, 0b10010010, 0b10010010, 0b10010010, 0b10010010, 0b01100100, 0b00000000	
+	
+myTable_7:
+	db	0b00000000, 0b10000010, 0b01000010, 0b00100010, 0b00010010, 0b00001010, 0b00000110, 0b00000000
+	
+myTable_8:
+	db	0b00000000, 0b01101100, 0b10010010, 0b10010010, 0b10010010, 0b10010010, 0b01101100, 0b00000000	
+	
+myTable_9:
+	db	0b00000000, 0b01001100, 0b10010010, 0b10010010, 0b10010010, 0b10010010, 0b01111100, 0b00000000
+	
+	
+			
 	myTable_l   EQU	8	; length of data
 	align	2
     
@@ -147,12 +177,123 @@ load_data_treebottom: 	lfsr	0, myArray	; Load FSR0 with address in RAM
 		movwf 	counter, A		; our counter register
 		bra	loop
 		
+		
 load_data_dino: 	lfsr	0, myArray	; Load FSR0 with address in RAM	
 		movlw	low highword(myTable_dino)	; address of data in PM
 		movwf	TBLPTRU, A		; load upper bits to TBLPTRU
 		movlw	high(myTable_dino)	; address of data in PM
 		movwf	TBLPTRH, A		; load high byte to TBLPTRH
 		movlw	low(myTable_dino)	; address of data in PM
+		movwf	TBLPTRL, A		; load low byte to TBLPTRL
+		movlw	myTable_l	; bytes to read
+		movwf 	counter, A		; our counter register
+		bra	loop
+		
+load_data_0: 	lfsr	0, myArray	; Load FSR0 with address in RAM	
+		movlw	low highword(myTable_0)	; address of data in PM
+		movwf	TBLPTRU, A		; load upper bits to TBLPTRU
+		movlw	high(myTable_0)	; address of data in PM
+		movwf	TBLPTRH, A		; load high byte to TBLPTRH
+		movlw	low(myTable_0)	; address of data in PM
+		movwf	TBLPTRL, A		; load low byte to TBLPTRL
+		movlw	myTable_l	; bytes to read
+		movwf 	counter, A		; our counter register
+		bra	loop
+		
+load_data_one: 	lfsr	0, myArray	; Load FSR0 with address in RAM	
+		movlw	low highword(myTable_one)	; address of data in PM
+		movwf	TBLPTRU, A		; load upper bits to TBLPTRU
+		movlw	high(myTable_one)	; address of data in PM
+		movwf	TBLPTRH, A		; load high byte to TBLPTRH
+		movlw	low(myTable_one)	; address of data in PM
+		movwf	TBLPTRL, A		; load low byte to TBLPTRL
+		movlw	myTable_l	; bytes to read
+		movwf 	counter, A		; our counter register
+		bra	loop
+		
+load_data_2: 	lfsr	0, myArray	; Load FSR0 with address in RAM	
+		movlw	low highword(myTable_2)	; address of data in PM
+		movwf	TBLPTRU, A		; load upper bits to TBLPTRU
+		movlw	high(myTable_2)	; address of data in PM
+		movwf	TBLPTRH, A		; load high byte to TBLPTRH
+		movlw	low(myTable_2)	; address of data in PM
+		movwf	TBLPTRL, A		; load low byte to TBLPTRL
+		movlw	myTable_l	; bytes to read
+		movwf 	counter, A		; our counter register
+		bra	loop
+		
+load_data_3: 	lfsr	0, myArray	; Load FSR0 with address in RAM	
+		movlw	low highword(myTable_3)	; address of data in PM
+		movwf	TBLPTRU, A		; load upper bits to TBLPTRU
+		movlw	high(myTable_3)	; address of data in PM
+		movwf	TBLPTRH, A		; load high byte to TBLPTRH
+		movlw	low(myTable_3)	; address of data in PM
+		movwf	TBLPTRL, A		; load low byte to TBLPTRL
+		movlw	myTable_l	; bytes to read
+		movwf 	counter, A		; our counter register
+		bra	loop
+		
+load_data_4: 	lfsr	0, myArray	; Load FSR0 with address in RAM	
+		movlw	low highword(myTable_4)	; address of data in PM
+		movwf	TBLPTRU, A		; load upper bits to TBLPTRU
+		movlw	high(myTable_4)	; address of data in PM
+		movwf	TBLPTRH, A		; load high byte to TBLPTRH
+		movlw	low(myTable_4)	; address of data in PM
+		movwf	TBLPTRL, A		; load low byte to TBLPTRL
+		movlw	myTable_l	; bytes to read
+		movwf 	counter, A		; our counter register
+		bra	loop
+		
+load_data_5: 	lfsr	0, myArray	; Load FSR0 with address in RAM	
+		movlw	low highword(myTable_5)	; address of data in PM
+		movwf	TBLPTRU, A		; load upper bits to TBLPTRU
+		movlw	high(myTable_5)	; address of data in PM
+		movwf	TBLPTRH, A		; load high byte to TBLPTRH
+		movlw	low(myTable_5)	; address of data in PM
+		movwf	TBLPTRL, A		; load low byte to TBLPTRL
+		movlw	myTable_l	; bytes to read
+		movwf 	counter, A		; our counter register
+		bra	loop
+		
+load_data_6: 	lfsr	0, myArray	; Load FSR0 with address in RAM	
+		movlw	low highword(myTable_6)	; address of data in PM
+		movwf	TBLPTRU, A		; load upper bits to TBLPTRU
+		movlw	high(myTable_6)	; address of data in PM
+		movwf	TBLPTRH, A		; load high byte to TBLPTRH
+		movlw	low(myTable_6)	; address of data in PM
+		movwf	TBLPTRL, A		; load low byte to TBLPTRL
+		movlw	myTable_l	; bytes to read
+		movwf 	counter, A		; our counter register
+		bra	loop
+		
+load_data_7: 	lfsr	0, myArray	; Load FSR0 with address in RAM	
+		movlw	low highword(myTable_7)	; address of data in PM
+		movwf	TBLPTRU, A		; load upper bits to TBLPTRU
+		movlw	high(myTable_7)	; address of data in PM
+		movwf	TBLPTRH, A		; load high byte to TBLPTRH
+		movlw	low(myTable_7)	; address of data in PM
+		movwf	TBLPTRL, A		; load low byte to TBLPTRL
+		movlw	myTable_l	; bytes to read
+		movwf 	counter, A		; our counter register
+		bra	loop
+		
+load_data_8: 	lfsr	0, myArray	; Load FSR0 with address in RAM	
+		movlw	low highword(myTable_8)	; address of data in PM
+		movwf	TBLPTRU, A		; load upper bits to TBLPTRU
+		movlw	high(myTable_8)	; address of data in PM
+		movwf	TBLPTRH, A		; load high byte to TBLPTRH
+		movlw	low(myTable_8)	; address of data in PM
+		movwf	TBLPTRL, A		; load low byte to TBLPTRL
+		movlw	myTable_l	; bytes to read
+		movwf 	counter, A		; our counter register
+		bra	loop
+		
+load_data_9: 	lfsr	0, myArray	; Load FSR0 with address in RAM	
+		movlw	low highword(myTable_9)	; address of data in PM
+		movwf	TBLPTRU, A		; load upper bits to TBLPTRU
+		movlw	high(myTable_9)	; address of data in PM
+		movwf	TBLPTRH, A		; load high byte to TBLPTRH
+		movlw	low(myTable_9)	; address of data in PM
 		movwf	TBLPTRL, A		; load low byte to TBLPTRL
 		movlw	myTable_l	; bytes to read
 		movwf 	counter, A		; our counter register

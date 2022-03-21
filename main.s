@@ -205,6 +205,10 @@ loop:
 	call	make_sprite_y
 	
 	call	make_ground
+	call	move_ground
+	call	move_ground
+	call	move_ground
+	call	move_ground
 	
 	
 	call	scoreboard
@@ -243,6 +247,10 @@ jump:
 	call	make_sprite_y
 	
 	call	make_ground
+	call	move_ground
+	call	move_ground
+	call	move_ground
+	call	move_ground
 	
 	call	scoreboard
 	call	display_score
@@ -271,6 +279,10 @@ jump:
 	call	make_sprite_y
 	
 	call	make_ground
+	call	move_ground
+	call	move_ground
+	call	move_ground
+	call	move_ground
 	
 	call	scoreboard
 	call	display_score
@@ -298,6 +310,10 @@ jump:
 	call	make_sprite_y
 	
 	call	make_ground
+	call	move_ground
+	call	move_ground
+	call	move_ground
+	call	move_ground
 	
 	call	scoreboard
 	call	display_score
@@ -326,6 +342,10 @@ jump:
 	call	make_sprite_y
 	
 	call	make_ground
+	call	move_ground
+	call	move_ground
+	call	move_ground
+	call	move_ground
 	
 	call	scoreboard
 	call	display_score
@@ -353,6 +373,10 @@ jump:
 	call	make_sprite_y
 	
 	call	make_ground
+	call	move_ground
+	call	move_ground
+	call	move_ground
+	call	move_ground
 	
 	call	scoreboard
 	call	display_score
@@ -380,6 +404,10 @@ jump:
 	call	make_sprite_y
 	
 	call	make_ground
+	call	move_ground
+	call	move_ground
+	call	move_ground
+	call	move_ground
 	
 	call	scoreboard
 	call	display_score
@@ -407,6 +435,10 @@ jump:
 	call	make_sprite_y
 	
 	call	make_ground
+	call	move_ground
+	call	move_ground
+	call	move_ground
+	call	move_ground
 	
 	call	scoreboard
 	call	display_score
@@ -434,6 +466,10 @@ jump:
 	call	make_sprite_y
 	
 	call	make_ground
+	call	move_ground
+	call	move_ground
+	call	move_ground
+	call	move_ground
 	
 	call	scoreboard
 	call	display_score
@@ -587,11 +623,13 @@ make_ground:
 	movf	b1_x1, W, A
 	call	make_sprite_x
 	
+	
 	movlw   0x07	;
 	call	set_y
 	call	load_block2
 	movf	b2_x1, W, A
 	call	make_sprite_x
+	
 	
 	movlw   0x07	;
 	call	set_y
@@ -650,6 +688,124 @@ make_ground:
 	call	load_block16
 	movf	b16_x1, W, A
 	call	make_sprite_x
+	
+	return
+
+move_ground:
+	decf	b1_x1, F, A
+	decf	b2_x1, F, A
+	decf	b3_x1, F, A
+	decf	b4_x1, F, A
+	decf	b5_x1, F, A
+	decf	b6_x1, F, A
+	decf	b7_x1, F, A
+	decf	b8_x1, F, A
+	decf	b9_x1, F, A
+	decf	b10_x1, F, A
+	decf	b11_x1, F, A
+	decf	b12_x1, F, A
+	decf	b13_x1, F, A
+	decf	b14_x1, F, A
+	decf	b15_x1, F, A
+	decf	b16_x1, F, A
+	
+	movlw	0x7f
+	cpfsgt	b1_x1, A
+	bra	$+6
+	movlw	0x80
+	subwf	b1_x1, F, A
+	
+	movlw	0x7f
+	cpfsgt	b2_x1, A
+	bra	$+6
+	movlw	0x80
+	subwf	b2_x1, F, A
+	
+	movlw	0x7f
+	cpfsgt	b3_x1, A
+	bra	$+6
+	movlw	0x80
+	subwf	b3_x1, F, A
+	
+	movlw	0x7f
+	cpfsgt	b4_x1, A
+	bra	$+6
+	movlw	0x80
+	subwf	b4_x1, F, A
+	
+	movlw	0x7f
+	cpfsgt	b5_x1, A
+	bra	$+6
+	movlw	0x80
+	subwf	b5_x1, F, A
+	
+	movlw	0x7f
+	cpfsgt	b6_x1, A
+	bra	$+6
+	movlw	0x80
+	subwf	b6_x1, F, A
+	
+	movlw	0x7f
+	cpfsgt	b7_x1, A
+	bra	$+6
+	movlw	0x80
+	subwf	b7_x1, F, A
+	
+	movlw	0x7f
+	cpfsgt	b8_x1, A
+	bra	$+6
+	movlw	0x80
+	subwf	b8_x1, F, A
+	
+	movlw	0x7f
+	cpfsgt	b9_x1, A
+	bra	$+6
+	movlw	0x80
+	subwf	b9_x1, F, A
+	
+	movlw	0x7f
+	cpfsgt	b10_x1, A
+	bra	$+6
+	movlw	0x80
+	subwf	b10_x1, F, A
+	
+	movlw	0x7f
+	cpfsgt	b11_x1, A
+	bra	$+6
+	movlw	0x80
+	subwf	b11_x1, F, A
+	
+	movlw	0x7f
+	cpfsgt	b12_x1, A
+	bra	$+6
+	movlw	0x80
+	subwf	b12_x1, F, A
+	
+	movlw	0x7f
+	cpfsgt	b13_x1, A
+	bra	$+6
+	movlw	0x80
+	subwf	b13_x1, F, A
+	
+	movlw	0x7f
+	cpfsgt	b14_x1, A
+	bra	$+6
+	movlw	0x80
+	subwf	b14_x1, F, A
+	
+	movlw	0x7f
+	cpfsgt	b15_x1, A
+	bra	$+6
+	movlw	0x80
+	subwf	b15_x1, F, A
+	
+	movlw	0x7f
+	cpfsgt	b16_x1, A
+	bra	$+6
+	movlw	0x80
+	subwf	b16_x1, F, A
+	
+	
 	
 	return
 	

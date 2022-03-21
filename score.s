@@ -2,11 +2,13 @@
 
 extrn	load_data_0, load_data_1, load_data_2, load_data_3, load_data_4, load_data_5, load_data_6 , load_data_7, load_data_8, load_data_9
 extrn	set_y, make_sprite_x
-global	score_init, scoreboard, display_score
+global	score_init, scoreboard, highscore, display_score, display_hscore, hscore_low, hscore_high
     
 psect	udata_acs    
 score_low:	ds  1
 score_high:	ds  1  
+hscore_low:	ds  1
+hscore_high:	ds 1
 digit0:		ds 1
 digit1:		ds 1
 digit2:		ds 1
@@ -77,8 +79,55 @@ scoreboard_high:
     incf    score_high, F, A
     return
     
+highscore:
+    movf    hscore_high, W, A
+    cpfsgt  score_high, A ;skip if score_high>hscore_high 
+    bra     hscore_eq
+    
+highscore_low:  
+    movf    hscore_low, W, A
+    cpfsgt  score_low, A ;skip if score_high>hscore_high 
+    return
+    movff   score_low, hscore_low
+    movff   score_high, hscore_high
+    return
+    
+hscore_eq:
+    cpfseq  score_high, A
+    return
+    bra	    highscore_low
+    
 display_score:
+    
     call    multiply16x16
+    movf    RES3, W, A
+    call    display_score0
+    call    multiply24x8
+    movf    RES31, W, A
+    call    display_score0
+    
+    movff   RES21, RES2	
+    movff   RES11, RES1
+    
+    call    multiply24x8
+    movff   RES31, RES3
+    movff   RES21, RES2
+    movff   RES11, RES1
+    
+    movf    RES3, W, A
+    call    display_score0
+    
+    call    multiply24x8
+    movf    RES31, W, A
+    call    display_score0
+    movlw   0x5e
+    movwf   position_x, A
+    return
+    
+display_hscore:
+    movlw   0x00
+    movwf   position_x, A
+    call    multiply16x16h
     movf    RES3, W, A
     call    display_score0
     call    multiply24x8
@@ -246,6 +295,36 @@ multiply16x16:
     ADDWFC RES3, F ;
 
     MOVF score_high, W, A ;
+    MULWF k_constl, A ;
+    MOVF PRODL, W, A ;
+    ADDWF RES1, F ; Add cross
+    MOVF PRODH, W, A ; products
+    ADDWFC RES2, F ;
+    CLRF WREG ;
+    ADDWFC RES3, F ;
+    return   
+    
+multiply16x16h:	
+    MOVF    hscore_low, W, A
+    MULWF   k_constl, A 
+    MOVFF   PRODH, RES1 ;
+    MOVFF   PRODL, RES0 ;
+
+    MOVF  hscore_high, W, A
+    MULWF k_consth, A 
+    MOVFF PRODH, RES3 ;
+    MOVFF PRODL, RES2 ;
+
+    MOVF hscore_low, W, A
+    MULWF k_consth, A 
+    MOVF PRODL, W, A ;
+    ADDWF RES1, F ; Add cross
+    MOVF PRODH, W, A ; products
+    ADDWFC RES2, F ;
+    CLRF WREG ;
+    ADDWFC RES3, F ;
+
+    MOVF hscore_high, W, A ;
     MULWF k_constl, A ;
     MOVF PRODL, W, A ;
     ADDWF RES1, F ; Add cross

@@ -4,7 +4,7 @@ extrn	LcdOpen, LcdSendData, LcdSelectLeft, LcdSelectRight, LcdSetPage, LcdSetRow
 extrn	set_x, make_sprite_y, LcdSetStart, key_setup, key_setup_column, key_delay_ms, key_setup_row, decode, collision_t1, collision_t2
 extrn	load_data_A, load_data_E, load_data_G , load_data_M, load_data_O, load_data_R, load_data_V, load_data_treetop, load_data_treebottom, load_data_dino
 extrn	random_setup, update_seed
-extrn	score_init, scoreboard, display_score
+extrn	score_init, scoreboard, highscore, display_score, display_hscore,  hscore_low, hscore_high
 global	t1_x1, t2_x1, d_y1, seed
 
 psect	udata_acs   ; named variables in access ram
@@ -35,15 +35,24 @@ myArray:    ds 0x80 ; reserve 128 bytes for message data
     
 psect	code, abs	
 rst: 	org 0x0
+	movlw	0x00
+	movwf	hscore_low, A
+	movwf	hscore_high, A
+	
  	goto	setup
 
 	; ******* Programme FLASH read Setup Code ***********************
-setup:	bcf	CFGS	; point to Flash program memory  
+setup:	
+	
+	bcf	CFGS	; point to Flash program memory  
 	bsf	EEPGD 	; access Flash program memory
 	
 	call	LcdOpen	; setup glcd
 	call	key_setup
+	
 	call	random_setup
+	clrf    STATUS, A
+	
 	
 	
 	goto	start
@@ -77,6 +86,8 @@ init:
 startup:
 	movlw	0x00
 	movwf	start_counter, A
+
+set_seed:
 	movff	start_counter, seed
 	incf	start_counter, F, A
 	call	key_press
@@ -84,13 +95,13 @@ startup:
 	movlw   0x01
 	cpfslt	key_bool, A; don't skip if key is pressed
 	bra	random_init
-	bra	startup
+	bra	set_seed
 	
 random_init:
 	call	update_seed
 	movlw	0b00111111
 	movwf	short_seed, A
-	movlw	0x08
+	movlw	0x10
 	movwf	min_dist, A
 	movlw	0x7f
 	addwf	seed, W, A
@@ -116,6 +127,7 @@ loop:
 	
 	call	scoreboard
 	call	display_score
+	call	display_hscore
 	
 	movf	delay_time, W, A
 	call	delay_ms
@@ -150,6 +162,7 @@ jump:
 	
 	call	scoreboard
 	call	display_score
+	call	display_hscore
 	
 	movf	delay_time, W, A
 	call	delay_ms
@@ -175,6 +188,7 @@ jump:
 	
 	call	scoreboard
 	call	display_score
+	call	display_hscore
 	
 	movf	delay_time, W, A
 	call	delay_ms
@@ -199,6 +213,7 @@ jump:
 	
 	call	scoreboard
 	call	display_score
+	call	display_hscore
 	
 	movf	delay_time, W, A
 	call	delay_ms
@@ -224,6 +239,7 @@ jump:
 	
 	call	scoreboard
 	call	display_score
+	call	display_hscore
 	
 	movf	delay_time, W, A
 	call	delay_ms
@@ -248,6 +264,7 @@ jump:
 	
 	call	scoreboard
 	call	display_score
+	call	display_hscore
 	
 	movf	delay_time, W, A
 	call	delay_ms
@@ -272,6 +289,7 @@ jump:
 	
 	call	scoreboard
 	call	display_score
+	call	display_hscore
 	
 	movf	delay_time, W, A
 	call	delay_ms
@@ -296,6 +314,7 @@ jump:
 	
 	call	scoreboard
 	call	display_score
+	call	display_hscore
 	
 	movf	delay_time, W, A
 	call	delay_ms
@@ -320,6 +339,7 @@ jump:
 	
 	call	scoreboard
 	call	display_score
+	call	display_hscore
 	
 	movf	delay_time, W, A
 	call	delay_ms
@@ -347,6 +367,21 @@ reset1:
 	addwf	t1_x1, W, A
 	addwf	min_dist, W, A
 	movwf	t2_x1, A
+	decf	delay_time, F, A
+	decf	delay_time, F, A
+	decf	delay_time, F, A
+	decf	delay_time, F, A
+	decf	delay_time, F, A
+	decf	delay_time, F, A
+	decf	delay_time, F, A
+	decf	delay_time, F, A
+	decf	delay_time, F, A
+	decf	delay_time, F, A
+	decf	delay_time, F, A
+	decf	delay_time, F, A
+	decf	delay_time, F, A
+	decf	delay_time, F, A
+
 	
 	return	
 	
@@ -436,10 +471,14 @@ move_trees:
 	decf	t1_x1, F, A
 	decf	t1_x1, F, A
 	decf	t1_x1, F, A
+	;decf	t1_x1, F, A
+	;decf	t1_x1, F, A
 	decf	t2_x1, F, A
 	decf	t2_x1, F, A
 	decf	t2_x1, F, A
 	decf	t2_x1, F, A
+	;decf	t2_x1, F, A
+	;decf	t2_x1, F, A
 	
 	return
 	
@@ -465,6 +504,7 @@ game_over:
 	call	LcdDisplayOn
 	call    LcdClear
 	
+display_game_over:
 	movlw	0x02
 	call	set_y
 	call	load_data_G
@@ -508,6 +548,21 @@ game_over:
 	call	make_sprite_x
 	
 	call	display_score
+	call	highscore
+	call	display_hscore
+	
+	movlw	0x90
+	call	delay_ms
+	
+	call	key_press
+	movwf	key_bool, A
+	movlw   0x01
+	cpfslt	key_bool, A; don't skip if key is pressed
+	goto	setup
+	
+	bra	display_game_over
+	
+	
 	
 	goto	$
 	

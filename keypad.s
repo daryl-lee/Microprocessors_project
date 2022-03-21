@@ -46,6 +46,10 @@ decodenull:
     movlw   0x00
     return
     
+;key_press1:
+;    movf    PORTE, W, A
+;    return
+    
 key_delay_ms:		    ; delay given in ms in W
 	movwf	key_cnt_ms, A
 lcdlp2:	movlw	250	    ; 1 ms delay

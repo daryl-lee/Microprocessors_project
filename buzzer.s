@@ -73,3 +73,5 @@ delay_sub1:
 	subwfb 	cnt_h, F, A	; no carry when 0x00 -> 0xff
 	bc 	delay_sub1		; carry, then loop again
 	return	
+	
+end

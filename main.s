@@ -8,6 +8,8 @@ extrn	random_setup, update_seed
 extrn	score_init, scoreboard, highscore, display_score, display_hscore,  hscore_low, hscore_high
 extrn	load_block1, load_block2, load_block3, load_block4, load_block5, load_block6, load_block7, load_block8
 extrn	load_block9, load_block10, load_block11, load_block12, load_block13, load_block14, load_block15, load_block16
+extrn	buzzer_setup, pulse    
+extrn	start_menu
 global	t1_x1, t2_x1, d_y1, seed
 
 psect	udata_acs   ; named variables in access ram
@@ -46,6 +48,7 @@ b13_x1:		    ds 1
 b14_x1:		    ds 1
 b15_x1:		    ds 1
 b16_x1:		    ds 1
+delay_rate:	    ds 1
     
     
 psect	udata_bank4 ; reserve data anywhere in RAM (here at 0x400)
@@ -71,6 +74,7 @@ setup:
 	call	key_setup
 	
 	call	random_setup
+	call	buzzer_setup
 	clrf    STATUS, A
 	
 	
@@ -100,6 +104,8 @@ init:
 	movwf	start_y, A
 	movlw   0x50
 	movwf	delay_time, A
+	movlw	0x0e
+	movwf	delay_rate, A
 	
 	movlw	0x00
 	movwf	b1_x1, A
@@ -137,31 +143,7 @@ init:
 	call	score_init
 
 startup:
-	movlw	0x03
-	call	set_y
-	call	load_data_P
-	movlw	0x1a
-	call	make_sprite_x
-	
-	call	load_data_R
-	movlw	0x22
-	call	make_sprite_x
-	
-	call	load_data_E
-	movlw	0x2a
-	call	make_sprite_x
-	
-	call	load_data_S
-	movlw	0x32
-	call	make_sprite_x
-	
-	call	load_data_S
-	movlw	0x3a
-	call	make_sprite_x
-	
-	call	load_data_O
-	movlw	0x5a
-	call	make_sprite_x
+	call	start_menu
 	
 	movlw	0x00
 	movwf	start_counter, A
@@ -236,6 +218,7 @@ loop:
 	bra	loop
 	
 jump:
+	;call	pulse
 	call    LcdSelectLeft
 	call	make_trees
 	movlw	0x2a
@@ -501,20 +484,8 @@ reset1:
 	addwf	t1_x1, W, A
 	addwf	min_dist, W, A
 	movwf	t2_x1, A
-	decf	delay_time, F, A
-	decf	delay_time, F, A
-	decf	delay_time, F, A
-	decf	delay_time, F, A
-	decf	delay_time, F, A
-	decf	delay_time, F, A
-	decf	delay_time, F, A
-	decf	delay_time, F, A
-	decf	delay_time, F, A
-	decf	delay_time, F, A
-	decf	delay_time, F, A
-	decf	delay_time, F, A
-	decf	delay_time, F, A
-	decf	delay_time, F, A
+	movf	delay_rate, W, A
+	subwf	delay_time, F, A
 
 	
 	return	
@@ -605,14 +576,10 @@ move_trees:
 	decf	t1_x1, F, A
 	decf	t1_x1, F, A
 	decf	t1_x1, F, A
-	;decf	t1_x1, F, A
-	;decf	t1_x1, F, A
 	decf	t2_x1, F, A
 	decf	t2_x1, F, A
 	decf	t2_x1, F, A
 	decf	t2_x1, F, A
-	;decf	t2_x1, F, A
-	;decf	t2_x1, F, A
 	
 	return
 	

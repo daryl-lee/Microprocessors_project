@@ -80,4 +80,4 @@ collision_set_bool:
     movlw   0x01
     return
 
-
+end

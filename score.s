@@ -83,10 +83,13 @@ highscore:
     movf    hscore_high, W, A
     cpfsgt  score_high, A ;skip if score_high>hscore_high 
     bra     hscore_eq
+    movff   score_low, hscore_low
+    movff   score_high, hscore_high
+    return
     
 highscore_low:  
     movf    hscore_low, W, A
-    cpfsgt  score_low, A ;skip if score_high>hscore_high 
+    cpfsgt  score_low, A ;skip if score_low>hscore_low 
     return
     movff   score_low, hscore_low
     movff   score_high, hscore_high

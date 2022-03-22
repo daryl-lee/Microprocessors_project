@@ -8,7 +8,7 @@ extrn	random_setup, update_seed
 extrn	score_init, scoreboard, highscore, display_score, display_hscore,  hscore_low, hscore_high
 extrn	buzzer_setup, pulse    
 extrn	start_menu, end_menu
-extrn	env_init, make_ground, move_ground;, make_cloud, move_cloud 
+extrn	env_init, make_ground, move_ground, make_cloud;, move_cloud 
 global	t1_x1, t2_x1, d_y1, seed
 
 psect	udata_acs   ; named variables in access ram
@@ -46,7 +46,7 @@ rst: 	org 0x0
 
 	; ******* Programme FLASH read Setup Code ***********************
 setup:	
-	
+	pop
 	bcf	CFGS	; point to Flash program memory  
 	bsf	EEPGD 	; access Flash program memory
 	
@@ -65,7 +65,6 @@ start: 	call	LcdOpen
 	call	LcdDisplayOn
 	bra	init
 	
-	goto $
 		
 init:	
 	call    LcdClear
@@ -138,7 +137,7 @@ loop:
 	call	move_ground
 	call	move_ground
 	
-;	call	make_cloud
+	call	make_cloud
 ;	call	move_cloud
 	
 	
@@ -164,7 +163,7 @@ loop:
 	call	jump
 	
 	
-	bra	loop
+	goto	loop
 	
 jump:
 	;call	pulse
@@ -184,7 +183,7 @@ jump:
 	call	move_ground
 	call	move_ground
 	
-;	call	make_cloud
+	call	make_cloud
 ;	call	move_cloud
 	
 	call	scoreboard
@@ -219,7 +218,7 @@ jump:
 	call	move_ground
 	call	move_ground
 	
-;	call	make_cloud
+	call	make_cloud
 ;	call	move_cloud
 	
 	call	scoreboard
@@ -253,7 +252,7 @@ jump:
 	call	move_ground
 	call	move_ground
 	
-;	call	make_cloud
+	call	make_cloud
 ;	call	move_cloud
 	
 	call	scoreboard
@@ -288,7 +287,7 @@ jump:
 	call	move_ground
 	call	move_ground
 	
-;	call	make_cloud
+	call	make_cloud
 ;	call	move_cloud
 	
 	call	scoreboard
@@ -322,7 +321,7 @@ jump:
 	call	move_ground
 	call	move_ground
 	
-;	call	make_cloud
+	call	make_cloud
 ;	call	move_cloud
 	
 	call	scoreboard
@@ -356,7 +355,7 @@ jump:
 	call	move_ground
 	call	move_ground
 	
-;	call	make_cloud
+	call	make_cloud
 ;	call	move_cloud
 	
 	call	scoreboard
@@ -390,7 +389,7 @@ jump:
 	call	move_ground
 	call	move_ground
 	
-;	call	make_cloud
+	call	make_cloud
 ;	call	move_cloud
 	
 	call	scoreboard
@@ -424,7 +423,7 @@ jump:
 	call	move_ground
 	call	move_ground
 	
-;	call	make_cloud
+	call	make_cloud
 ;	call	move_cloud
 	
 	call	scoreboard
@@ -442,9 +441,8 @@ jump:
 	cpfsgt	t1_x1, A
 	call	reset1	
 	
-	bra	loop
+	return
 	
-	goto	$
 	
 reset1:
 	movff	t2_x1, t1_x1
@@ -563,17 +561,18 @@ collision_check:
 	movwf	collision_bool, A
 	movlw   0x01
 	cpfslt	collision_bool, A ;skip if no collision (W=0x00)
-	call	game_over
+	bra	game_over
 	
 	call	collision_t2
 	
 	movwf	collision_bool, A
 	movlw   0x01
 	cpfslt	collision_bool, A ;skip if no collision (W=0x00)
-	call	game_over
+	bra	game_over
 	return
 	
 game_over:
+	
 	call    LcdClear
 	call	LcdOpen
 	call	LcdDisplayOn
@@ -588,7 +587,7 @@ display_game_over:
 	
 	movlw	0x90
 	call	delay_ms
-	
+
 	call	key_press
 	movwf	key_bool, A
 	movlw   0x01
@@ -596,11 +595,7 @@ display_game_over:
 	goto	setup
 	
 	bra	display_game_over
-	
-	
-	
+
 	goto	$
-	
-	
 
 	end	rst

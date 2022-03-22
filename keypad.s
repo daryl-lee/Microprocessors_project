@@ -37,11 +37,10 @@ key_setup_column:
     
 decode:
     cpfseq  digit0, A
-    bra     decodenull	    
+    goto    decodenull	    
     movlw   0x01
     return
-
-
+    
 decodenull:	    
     movlw   0x00
     return

@@ -122,6 +122,7 @@ psect	lcd_code, class=CODE
                  bsf     LCD_EN_LAT,LCD_EN , A      ; Then strobe EN
                  bra     $+2
                  bra     $+2
+		 bra     $+2
                  bcf     LCD_EN_LAT,LCD_EN, A
  
                  btfss   LCD_D_I_LAT,LCD_D_I, A     ; If we were sending data
@@ -166,6 +167,7 @@ psect	lcd_code, class=CODE
                  bsf     LCD_EN_LAT,LCD_EN, A       ; Strobe EN
                  bra     $+2
                  bra     $+2
+		 bra     $+2
                  movf    PORTD,W , A        ; Read byte from display
                  bcf     LCD_EN_LAT,LCD_EN, A
                  return

@@ -6,10 +6,9 @@ extrn	load_data_A, load_data_E, load_data_G , load_data_M, load_data_O, load_dat
 extrn	load_data_treetop, load_data_treebottom, load_data_dino
 extrn	random_setup, update_seed
 extrn	score_init, scoreboard, highscore, display_score, display_hscore,  hscore_low, hscore_high
-extrn	load_block1, load_block2, load_block3, load_block4, load_block5, load_block6, load_block7, load_block8
-extrn	load_block9, load_block10, load_block11, load_block12, load_block13, load_block14, load_block15, load_block16
 extrn	buzzer_setup, pulse    
-extrn	start_menu
+extrn	start_menu, end_menu
+extrn	env_init, make_ground, move_ground  
 global	t1_x1, t2_x1, d_y1, seed
 
 psect	udata_acs   ; named variables in access ram
@@ -32,22 +31,6 @@ start_counter:	    ds 1
 short_seed:	    ds 1
 min_dist:	    ds 1
 delay_time:	    ds 1
-b1_x1:		    ds 1
-b2_x1:		    ds 1
-b3_x1:		    ds 1
-b4_x1:		    ds 1
-b5_x1:		    ds 1
-b6_x1:		    ds 1
-b7_x1:		    ds 1
-b8_x1:		    ds 1
-b9_x1:		    ds 1
-b10_x1:		    ds 1
-b11_x1:		    ds 1
-b12_x1:		    ds 1
-b13_x1:		    ds 1
-b14_x1:		    ds 1
-b15_x1:		    ds 1
-b16_x1:		    ds 1
 delay_rate:	    ds 1
     
     
@@ -76,8 +59,7 @@ setup:
 	call	random_setup
 	call	buzzer_setup
 	clrf    STATUS, A
-	
-	
+
 	
 	goto	start
 	
@@ -107,38 +89,7 @@ init:
 	movlw	0x0e
 	movwf	delay_rate, A
 	
-	movlw	0x00
-	movwf	b1_x1, A
-	movlw	0x08
-	movwf	b2_x1, A
-	movlw	0x10
-	movwf	b3_x1, A
-	movlw	0x18
-	movwf	b4_x1, A
-	movlw	0x20
-	movwf	b5_x1, A
-	movlw	0x28
-	movwf	b6_x1, A
-	movlw	0x30
-	movwf	b7_x1, A
-	movlw	0x38
-	movwf	b8_x1, A
-	movlw	0x40
-	movwf	b9_x1, A
-	movlw	0x48
-	movwf	b10_x1, A
-	movlw	0x50
-	movwf	b11_x1, A
-	movlw	0x58
-	movwf	b12_x1, A
-	movlw	0x60
-	movwf	b13_x1, A
-	movlw	0x68
-	movwf	b14_x1, A
-	movlw	0x70
-	movwf	b15_x1, A
-	movlw	0x78
-	movwf	b16_x1, A
+	call	env_init
 	
 	call	score_init
 
@@ -582,199 +533,7 @@ move_trees:
 	decf	t2_x1, F, A
 	
 	return
-	
-make_ground:
-	movlw   0x07	;
-	call	set_y	;
-	call	load_block1
-	movf	b1_x1, W, A
-	call	make_sprite_x
-	
-	
-	movlw   0x07	;
-	call	set_y
-	call	load_block2
-	movf	b2_x1, W, A
-	call	make_sprite_x
-	
-	
-	movlw   0x07	;
-	call	set_y
-	call	load_block3
-	movf	b3_x1, W, A
-	call	make_sprite_x
-	
-	call	load_block4
-	movf	b4_x1, W, A
-	call	make_sprite_x
-	
-	call	load_block5
-	movf	b5_x1, W, A
-	call	make_sprite_x
-	
-	call	load_block6
-	movf	b6_x1, W, A
-	call	make_sprite_x
-	
-	call	load_block7
-	movf	b7_x1, W, A
-	call	make_sprite_x
-	
-	call	load_block8
-	movf	b8_x1, W, A
-	call	make_sprite_x
-	
-	call	load_block9
-	movf	b9_x1, W, A
-	call	make_sprite_x
-	
-	call	load_block10
-	movf	b10_x1, W, A
-	call	make_sprite_x
-	
-	call	load_block11
-	movf	b11_x1, W, A
-	call	make_sprite_x
-	
-	call	load_block12
-	movf	b12_x1, W, A
-	call	make_sprite_x
-	
-	call	load_block13
-	movf	b13_x1, W, A
-	call	make_sprite_x
-	
-	call	load_block14
-	movf	b14_x1, W, A
-	call	make_sprite_x
-	
-	call	load_block15
-	movf	b15_x1, W, A
-	call	make_sprite_x
-	
-	call	load_block16
-	movf	b16_x1, W, A
-	call	make_sprite_x
-	
-	return
 
-move_ground:
-	decf	b1_x1, F, A
-	decf	b2_x1, F, A
-	decf	b3_x1, F, A
-	decf	b4_x1, F, A
-	decf	b5_x1, F, A
-	decf	b6_x1, F, A
-	decf	b7_x1, F, A
-	decf	b8_x1, F, A
-	decf	b9_x1, F, A
-	decf	b10_x1, F, A
-	decf	b11_x1, F, A
-	decf	b12_x1, F, A
-	decf	b13_x1, F, A
-	decf	b14_x1, F, A
-	decf	b15_x1, F, A
-	decf	b16_x1, F, A
-	
-	movlw	0x7f
-	cpfsgt	b1_x1, A
-	bra	$+6
-	movlw	0x80
-	subwf	b1_x1, F, A
-	
-	movlw	0x7f
-	cpfsgt	b2_x1, A
-	bra	$+6
-	movlw	0x80
-	subwf	b2_x1, F, A
-	
-	movlw	0x7f
-	cpfsgt	b3_x1, A
-	bra	$+6
-	movlw	0x80
-	subwf	b3_x1, F, A
-	
-	movlw	0x7f
-	cpfsgt	b4_x1, A
-	bra	$+6
-	movlw	0x80
-	subwf	b4_x1, F, A
-	
-	movlw	0x7f
-	cpfsgt	b5_x1, A
-	bra	$+6
-	movlw	0x80
-	subwf	b5_x1, F, A
-	
-	movlw	0x7f
-	cpfsgt	b6_x1, A
-	bra	$+6
-	movlw	0x80
-	subwf	b6_x1, F, A
-	
-	movlw	0x7f
-	cpfsgt	b7_x1, A
-	bra	$+6
-	movlw	0x80
-	subwf	b7_x1, F, A
-	
-	movlw	0x7f
-	cpfsgt	b8_x1, A
-	bra	$+6
-	movlw	0x80
-	subwf	b8_x1, F, A
-	
-	movlw	0x7f
-	cpfsgt	b9_x1, A
-	bra	$+6
-	movlw	0x80
-	subwf	b9_x1, F, A
-	
-	movlw	0x7f
-	cpfsgt	b10_x1, A
-	bra	$+6
-	movlw	0x80
-	subwf	b10_x1, F, A
-	
-	movlw	0x7f
-	cpfsgt	b11_x1, A
-	bra	$+6
-	movlw	0x80
-	subwf	b11_x1, F, A
-	
-	movlw	0x7f
-	cpfsgt	b12_x1, A
-	bra	$+6
-	movlw	0x80
-	subwf	b12_x1, F, A
-	
-	movlw	0x7f
-	cpfsgt	b13_x1, A
-	bra	$+6
-	movlw	0x80
-	subwf	b13_x1, F, A
-	
-	movlw	0x7f
-	cpfsgt	b14_x1, A
-	bra	$+6
-	movlw	0x80
-	subwf	b14_x1, F, A
-	
-	movlw	0x7f
-	cpfsgt	b15_x1, A
-	bra	$+6
-	movlw	0x80
-	subwf	b15_x1, F, A
-	
-	movlw	0x7f
-	cpfsgt	b16_x1, A
-	bra	$+6
-	movlw	0x80
-	subwf	b16_x1, F, A
-	
-	
-	
-	return
 	
 collision_check:
 	call	collision_t1
@@ -799,47 +558,7 @@ game_over:
 	call    LcdClear
 	
 display_game_over:
-	movlw	0x02
-	call	set_y
-	call	load_data_G
-	movlw	0x32
-	call	make_sprite_x
-	
-	
-	call	load_data_A
-	movlw	0x3a
-	call	make_sprite_x
-	
-	
-	call	load_data_M
-	movlw	0x42
-	call	make_sprite_x
-	
-	
-	call	load_data_E
-	movlw	0x4a
-	call	make_sprite_x
-	
-	movlw	0x03
-	call	set_y
-	call	load_data_O
-	movlw	0x32
-	call	make_sprite_x
-	
-	
-	call	load_data_V
-	movlw	0x3a
-	call	make_sprite_x
-	
-	
-	call	load_data_E
-	movlw	0x42
-	call	make_sprite_x
-	
-	
-	call	load_data_R
-	movlw	0x4a
-	call	make_sprite_x
+	call	end_menu
 	
 	call	display_score
 	call	highscore

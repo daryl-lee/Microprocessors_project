@@ -8,7 +8,7 @@ extrn	random_setup, update_seed
 extrn	score_init, scoreboard, highscore, display_score, display_hscore,  hscore_low, hscore_high
 extrn	buzzer_setup, pulse    
 extrn	start_menu, end_menu
-extrn	env_init, make_ground, move_ground  
+extrn	env_init, make_ground, move_ground;, make_cloud, move_cloud 
 global	t1_x1, t2_x1, d_y1, seed
 
 psect	udata_acs   ; named variables in access ram
@@ -33,9 +33,6 @@ min_dist:	    ds 1
 delay_time:	    ds 1
 delay_rate:	    ds 1
     
-    
-psect	udata_bank4 ; reserve data anywhere in RAM (here at 0x400)
-myArray:    ds 0x80 ; reserve 128 bytes for message data
 
 
     
@@ -67,11 +64,9 @@ setup:
 start: 	call	LcdOpen
 	call	LcdDisplayOn
 	bra	init
-
 	
 	goto $
-	
-	
+		
 init:	
 	call    LcdClear
 	movlw	0x18
@@ -143,6 +138,9 @@ loop:
 	call	move_ground
 	call	move_ground
 	
+;	call	make_cloud
+;	call	move_cloud
+	
 	
 	call	scoreboard
 	call	display_score
@@ -186,6 +184,9 @@ jump:
 	call	move_ground
 	call	move_ground
 	
+;	call	make_cloud
+;	call	move_cloud
+	
 	call	scoreboard
 	call	display_score
 	call	display_hscore
@@ -218,6 +219,9 @@ jump:
 	call	move_ground
 	call	move_ground
 	
+;	call	make_cloud
+;	call	move_cloud
+	
 	call	scoreboard
 	call	display_score
 	call	display_hscore
@@ -248,6 +252,9 @@ jump:
 	call	move_ground
 	call	move_ground
 	call	move_ground
+	
+;	call	make_cloud
+;	call	move_cloud
 	
 	call	scoreboard
 	call	display_score
@@ -281,6 +288,9 @@ jump:
 	call	move_ground
 	call	move_ground
 	
+;	call	make_cloud
+;	call	move_cloud
+	
 	call	scoreboard
 	call	display_score
 	call	display_hscore
@@ -311,6 +321,9 @@ jump:
 	call	move_ground
 	call	move_ground
 	call	move_ground
+	
+;	call	make_cloud
+;	call	move_cloud
 	
 	call	scoreboard
 	call	display_score
@@ -343,6 +356,9 @@ jump:
 	call	move_ground
 	call	move_ground
 	
+;	call	make_cloud
+;	call	move_cloud
+	
 	call	scoreboard
 	call	display_score
 	call	display_hscore
@@ -373,6 +389,9 @@ jump:
 	call	move_ground
 	call	move_ground
 	call	move_ground
+	
+;	call	make_cloud
+;	call	move_cloud
 	
 	call	scoreboard
 	call	display_score
@@ -404,6 +423,9 @@ jump:
 	call	move_ground
 	call	move_ground
 	call	move_ground
+	
+;	call	make_cloud
+;	call	move_cloud
 	
 	call	scoreboard
 	call	display_score

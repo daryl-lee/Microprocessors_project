@@ -1,6 +1,6 @@
 #include <xc.inc>
 	
-global	buzzer_setup, pulse
+global	buzzer_setup, pulse_jump, pulse_death, death_setup
 psect	udata_acs
 cycles:		ds      1
 cnt_l:	ds 1   ; reserve 1 byte for variable LCD_cnt_l
@@ -9,47 +9,56 @@ cnt_ms:	ds 1
     
 psect	buzzer_code, class=CODE
 
+
 buzzer_setup: 
-    movlw	0x20
+    movlw	0x10		    ;length of jump sound
+    movwf	cycles, A
+    return
+    
+death_setup: 
+    movlw	0x20		    ;length of death sound
     movwf	cycles, A
     return
   
-pulse:  
-    ;call	period
-    bsf		LATB, 6, A
+  
+pulse_jump:  
+    bsf		PORTB, 6, A
+    movlw	0x01		    ; 4 us delay
     call	delay_sub2
-    bcf		LATB, 6, A
+    bcf		PORTB, 6, A
+    movlw	0x01		    ; 4 us delay
     call	delay_sub2
     decf	cycles
     movlw	0x00   
     cpfseq	cycles	;skip if = 0
-    bra		pulse
+    bra		pulse_jump
     bra		buzzer_setup
+    
+pulse_death:  
+    bsf		PORTB, 6, A	; 3.06 ms delay
+    movlw	0xff
+    call	delay_sub2
+    movlw	0xff
+    call	delay_sub2
+    movlw	0xff
+    call	delay_sub2
+    bcf		PORTB, 6, A
+    movlw	0xff
+    call	delay_sub2
+    movlw	0xff
+    call	delay_sub2
+    movlw	0xff
+    call	delay_sub2
+    decf	cycles
+    movlw	0x00   
+    cpfseq	cycles	;skip if = 0
+    bra		pulse_death
+    bra		death_setup
 
 	
-period:
-    bsf	LATB, 6, A
-    nop
-    nop
-    nop
-    nop
-    nop
-    nop
-    nop
-    nop		    ; Take enable high
-    nop
-    nop
-    nop
-    nop
-    nop
-    nop
-    bcf	LATB, 6, A
-    bcf	LATB, 6, A	    ; Writes data to LCD
-    return
-
 
 delay_sub2:	
-	movlw	0x2a	    ; 0.16ms delay
+		    ; 4 microsecond delay
 	call	delay_x4us	
 	decfsz	cnt_ms, A
 	bra	delay_sub2

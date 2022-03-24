@@ -1,12 +1,15 @@
 #include <xc.inc>
 
-global	    key_setup, key_setup_column, key_delay_ms, key_setup_row, decode
+global	    key_setup, key_setup_column, key_delay_ms, key_setup_row, decode, key_press
 
 psect	udata_acs   ; named variables in access ram
 key_cnt_l:	ds 1   ; reserve 1 byte for variable LCD_cnt_l
 key_cnt_h:	ds 1   ; reserve 1 byte for variable LCD_cnt_h
 key_cnt_ms:	ds 1   ; reserve 1 byte for ms counter
 digit0:		ds 1
+digitB:		ds 1
+keys1:	ds  1
+keys2:	ds  1
 
 
     
@@ -19,6 +22,8 @@ key_setup:
     clrf    LATE, A
     movlw   0b10111110
     movwf   digit0, A
+    movlw   0b11011110
+    movwf   digitB, A
     
    
 key_setup_row:
@@ -35,19 +40,38 @@ key_setup_column:
     movwf   PORTE, A
     return
     
+key_press:	
+	call	key_setup_row
+	movlw	0x01
+	call	key_delay_ms
+	movff	PORTE, keys1	
+	call	key_setup_column
+	movlw	0x01
+	call	key_delay_ms
+	movff	PORTE, keys2
+	movf	keys2, W, A
+	addwf	keys1, F, A
+	movf	keys1, W, A
+	call	decode	
+	return
+    
 decode:
     cpfseq  digit0, A
-    goto    decodenull	    
+    goto    decodeB	    
     movlw   0x01
+    return
+    
+decodeB:
+    cpfseq  digitB, A
+    goto    decodenull	    
+    movlw   0x02
     return
     
 decodenull:	    
     movlw   0x00
     return
     
-;key_press1:
-;    movf    PORTE, W, A
-;    return
+
     
 key_delay_ms:		    ; delay given in ms in W
 	movwf	key_cnt_ms, A

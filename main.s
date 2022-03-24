@@ -1,23 +1,19 @@
 #include <xc.inc>
 
 extrn	LcdOpen, LcdSendData, LcdSelectLeft, LcdSelectRight, LcdSetPage, LcdSetRow, LcdDisplayOn, LcdDisplayOff, LcdReset, LcdClear, make_sprite_x, set_y
-extrn	set_x, make_sprite_y, LcdSetStart, key_setup, key_setup_column, key_delay_ms, key_setup_row, decode, collision_t1, collision_t2
+extrn	set_x, make_sprite_y, LcdSetStart, key_setup, key_delay_ms, decode, key_press, collision_t1, collision_t2
 extrn	load_data_treetop, load_data_treebottom, load_data_dino
 extrn	random_setup, update_seed
 extrn	score_init, scoreboard, highscore, display_score, display_hscore,  hscore_low, hscore_high
-extrn	buzzer_setup, pulse    
-extrn	start_menu, end_menu
-extrn	env_init, make_ground, move_ground, make_cloud;, move_cloud 
+extrn	buzzer_setup, pulse_jump, pulse_death, death_setup  
+extrn	start_menu, end_menu, pause_menu
+extrn	env_init, make_ground, move_ground, make_cloud
 global	t1_x1, t2_x1, d_y1, seed
 
 psect	udata_acs   ; named variables in access ram
-cnt_l:	ds 1   ; reserve 1 byte for variable LCD_cnt_l
-cnt_h:	ds 1   ; reserve 1 byte for variable LCD_cnt_h
-cnt_ms:	ds 1   ; reserve 1 byte for ms counter
 start_x: ds 1
 start_y: ds 1
-keys1:	ds  1
-keys2:	ds  1
+
 key_bool: ds 1
 distance:   ds 1
 t1_x1: ds 1
@@ -32,8 +28,6 @@ min_dist:	    ds 1
 delay_time:	    ds 1
 delay_rate:	    ds 1
     
-
-
     
 psect	code, abs	
 rst: 	org 0x0
@@ -43,20 +37,19 @@ rst: 	org 0x0
 	
  	goto	setup
 
-	; ******* Programme FLASH read Setup Code ***********************
+	; ******* Setup Code ***********************
 setup:	
 	pop
 	bcf	CFGS	; point to Flash program memory  
 	bsf	EEPGD 	; access Flash program memory
 	
 	call	LcdOpen	; setup glcd
-	call	key_setup
+	call	key_setup ;setup keypad
 	
-	call	random_setup
-	call	buzzer_setup
+	call	random_setup	;setup random number generator
+	call	buzzer_setup	; setup buzzer
 	clrf    STATUS, A
 
-	
 	goto	start
 	
 	; ******* Main programme ****************************************
@@ -64,7 +57,7 @@ start: 	call	LcdOpen
 	call	LcdDisplayOn
 	bra	init
 	
-		
+	; ******* Set game parameters ****************************************	
 init:	
 	call    LcdClear
 	movlw	0x18
@@ -82,16 +75,14 @@ init:
 	movlw	0x0e
 	movwf	delay_rate, A
 	
-	call	env_init
-	
-	call	score_init
+	call	env_init	; sets variables in environment
+	call	score_init	; digit display initialisation
 
 startup:
-	call	start_menu
+	call	start_menu	; display start menu
 	
 	movlw	0x50
-	call	delay_ms
-	
+	call	key_delay_ms
 	movlw	0x00
 	movwf	start_counter, A    ;initialise counter for seed generation
 
@@ -109,7 +100,7 @@ random_init:
 	call	update_seed ;generates the next random number in the sequence 
 	movlw	0b00111111
 	movwf	short_seed, A	;ensure that new tree position does not exceed FFh
-	movlw	0x16
+	movlw	0x18
 	movwf	min_dist, A	;minimum distance between t1_x1 and t2_x1
 	movlw	0x7f
 	addwf	seed, W, A	
@@ -126,87 +117,43 @@ random_init:
 loop:				    
     
 	call    LcdSelectLeft
-	call	make_trees
+	call	make_trees	; creates trees
 	movlw	0x2a
 	call	set_x
 	
-	call	load_data_dino
+	call	load_data_dino	    ; dino on ground
 	movff	start_y, d_y1
 	movf	start_y, W, A
 	call	make_sprite_y
 	
-	call	make_ground
-	call	move_ground
-	call	move_ground
-	call	move_ground
-	call	move_ground
+	call	frame_updates	    ; frame checks and updates
 	
-	call	make_cloud
-;	call	move_cloud
-	
-	
-	call	scoreboard
-	call	display_score
-	call	display_hscore
-	
-	movf	delay_time, W, A
-	call	delay_ms
-	call	collision_check
-	
-	call    LcdClear
-	call	move_trees
-	
-	movlw	0x03
-	cpfsgt	t1_x1, A
-	call	reset1
-	
-	call	key_press
+	call	key_press	    ; looks for key presses
 	movwf	key_bool, A
 	movlw   0x01
-	cpfslt	key_bool, A; don't skip if key is pressed
+	cpfseq	key_bool, A; skip if key is pressed
+	goto	loop
 	call	jump
-	
-	
 	goto	loop
 	
+
 	
 	; ******* Airborne State ****************************************	
-jump:
-	;call	pulse
+jump:				    ;jumping animation
+				    ;y coordinates : 0x14 -> 0x1b -> 0x22 -> 0x26 -> 0x26 -> 0x22 -> 0x1b -> 0x14
+    
+	call	pulse_jump	    ;jump sound
 	call    LcdSelectLeft
 	call	make_trees
 	movlw	0x2a
 	call	set_x
 	
 	call    load_data_dino
-	movlw	0x14
+	movlw	0x14		    
 	movwf	d_y1, A
 	call	make_sprite_y
 	
-	call	make_ground
-	call	move_ground
-	call	move_ground
-	call	move_ground
-	call	move_ground
-	
-	call	make_cloud
-;	call	move_cloud
-	
-	call	scoreboard
-	call	display_score
-	call	display_hscore
-	
-	movf	delay_time, W, A
-	call	delay_ms
-	call	collision_check
-	
-	call    LcdClear
-	call	move_trees
-	
-	movlw	0x03
-	cpfsgt	t1_x1, A
-	call	reset1	
-    
+	call	frame_updates
     
 	call    LcdSelectLeft
 	call	make_trees
@@ -218,29 +165,7 @@ jump:
 	movwf	d_y1, A
 	call	make_sprite_y
 	
-	call	make_ground
-	call	move_ground
-	call	move_ground
-	call	move_ground
-	call	move_ground
-	
-	call	make_cloud
-;	call	move_cloud
-	
-	call	scoreboard
-	call	display_score
-	call	display_hscore
-	
-	movf	delay_time, W, A
-	call	delay_ms
-	call	collision_check
-	
-	call    LcdClear
-	call	move_trees
-	
-	movlw	0x03
-	cpfsgt	t1_x1, A
-	call	reset1	
+	call	frame_updates
 	
 	call    LcdSelectLeft
 	call	make_trees
@@ -252,30 +177,19 @@ jump:
 	movwf	d_y1, A
 	call	make_sprite_y
 	
-	call	make_ground
-	call	move_ground
-	call	move_ground
-	call	move_ground
-	call	move_ground
+	call	frame_updates
 	
-	call	make_cloud
-;	call	move_cloud
+	call    LcdSelectLeft
+	call	make_trees
+	movlw	0x2a
+	call	set_x
 	
-	call	scoreboard
-	call	display_score
-	call	display_hscore
-	
-	movf	delay_time, W, A
-	call	delay_ms
-	call	collision_check
-	
-	call    LcdClear
-	call	move_trees
-	
-	movlw	0x03
-	cpfsgt	t1_x1, A
-	call	reset1
-	
+	call    load_data_dino
+	movlw	0x26
+	movwf	d_y1, A
+	call	make_sprite_y
+
+	call	frame_updates
 	
 	call    LcdSelectLeft
 	call	make_trees
@@ -287,63 +201,7 @@ jump:
 	movwf	d_y1, A
 	call	make_sprite_y
 	
-	call	make_ground
-	call	move_ground
-	call	move_ground
-	call	move_ground
-	call	move_ground
-	
-	call	make_cloud
-;	call	move_cloud
-	
-	call	scoreboard
-	call	display_score
-	call	display_hscore
-	
-	movf	delay_time, W, A
-	call	delay_ms
-	call	collision_check
-	
-	call    LcdClear
-	call	move_trees
-	
-	movlw	0x03
-	cpfsgt	t1_x1, A
-	call	reset1
-	
-	call    LcdSelectLeft
-	call	make_trees
-	movlw	0x2a
-	call	set_x
-	
-	call    load_data_dino
-	movlw	0x26
-	movwf	d_y1, A
-	call	make_sprite_y
-	
-	call	make_ground
-	call	move_ground
-	call	move_ground
-	call	move_ground
-	call	move_ground
-	
-	call	make_cloud
-;	call	move_cloud
-	
-	call	scoreboard
-	call	display_score
-	call	display_hscore
-	
-	movf	delay_time, W, A
-	call	delay_ms
-	call	collision_check
-	
-	call    LcdClear
-	call	move_trees
-	
-	movlw	0x03
-	cpfsgt	t1_x1, A
-	call	reset1
+	call	frame_updates
 	
 	call    LcdSelectLeft
 	call	make_trees
@@ -355,29 +213,7 @@ jump:
 	movwf	d_y1, A
 	call	make_sprite_y
 	
-	call	make_ground
-	call	move_ground
-	call	move_ground
-	call	move_ground
-	call	move_ground
-	
-	call	make_cloud
-;	call	move_cloud
-	
-	call	scoreboard
-	call	display_score
-	call	display_hscore
-	
-	movf	delay_time, W, A
-	call	delay_ms
-	call	collision_check
-	
-	call    LcdClear
-	call	move_trees
-	
-	movlw	0x03
-	cpfsgt	t1_x1, A
-	call	reset1
+	call	frame_updates
 	
 	call    LcdSelectLeft
 	call	make_trees
@@ -389,29 +225,7 @@ jump:
 	movwf	d_y1, A
 	call	make_sprite_y
 	
-	call	make_ground
-	call	move_ground
-	call	move_ground
-	call	move_ground
-	call	move_ground
-	
-	call	make_cloud
-;	call	move_cloud
-	
-	call	scoreboard
-	call	display_score
-	call	display_hscore
-	
-	movf	delay_time, W, A
-	call	delay_ms
-	call	collision_check
-	
-	call    LcdClear
-	call	move_trees
-	
-	movlw	0x03
-	cpfsgt	t1_x1, A
-	call	reset1	
+	call	frame_updates
 	
 	call    LcdSelectLeft
 	call	make_trees
@@ -423,32 +237,22 @@ jump:
 	movwf	d_y1, A
 	call	make_sprite_y
 	
-	call	make_ground
-	call	move_ground
-	call	move_ground
-	call	move_ground
-	call	move_ground
-	
-	call	make_cloud
-;	call	move_cloud
-	
-	call	scoreboard
-	call	display_score
-	call	display_hscore
-	
-	movf	delay_time, W, A
-	call	delay_ms
-	call	collision_check
-	
-	call    LcdClear
-	call	move_trees
-	
-	movlw	0x03
-	cpfsgt	t1_x1, A
-	call	reset1	
+	call	frame_updates
 	
 	return
 	
+pause:
+	call	pause_menu
+	movlw	0x60
+	call	key_delay_ms
+	call	key_press
+	movwf	key_bool, A
+	movlw   0x02
+	cpfseq	key_bool, A; skip if unpause key is pressed
+	bra	pause
+	movlw	0x60
+	call	key_delay_ms
+	return
 	
 reset1:
 	movff	t2_x1, t1_x1		;swap tree labels
@@ -475,48 +279,7 @@ random_case1:				;if there is another tree on screen already
 	addwf	min_dist, W, A
 	movwf	t2_x1, A		; tree 2 position = 127 + minimum distance + short random number
 	return
-	
-key_press:	
-	call	key_setup_row
-	movlw	0x01
-	call	key_delay_ms
-	movff	PORTE, keys1	
-	call	key_setup_column
-	movlw	0x01
-	call	key_delay_ms
-	movff	PORTE, keys2
-	movf	keys2, W, A
-	addwf	keys1, F, A
-	movf	keys1, W, A
-	call	decode	
-	return
-	
-delay_ms:		    ; delay given in ms in W
-	movwf	cnt_ms, A
-delay_sub2:	movlw	250	    ; 1 ms delay
-	call	delay_x4us	
-	decfsz	cnt_ms, A
-	bra	delay_sub2
-	return
 
-delay_x4us:		    ; delay given in chunks of 4 microsecond in W
-	movwf	cnt_l, A	; now need to multiply by 16
-	swapf   cnt_l, F, A	; swap nibbles
-	movlw	0x0f	    
-	andwf	cnt_l, W, A ; move low nibble to W
-	movwf	cnt_h, A	; then to LCD_cnt_h
-	movlw	0xf0	    
-	andwf	cnt_l, F, A ; keep high nibble in LCD_cnt_l
-	call	delay
-	return
-
-delay:			; delay routine	4 instruction loop == 250ns	    
-	movlw 	0x00		; W=0
-delay_sub1:	
-	decf 	cnt_l, F, A	; no carry when 0x00 -> 0xff
-	subwfb 	cnt_h, F, A	; no carry when 0x00 -> 0xff
-	bc 	delay_sub1		; carry, then loop again
-	return	
 	
 make_trees:
 	movlw	0x06			;page of upper tree 1 sprite
@@ -547,7 +310,6 @@ make_trees:
 	
 	return
 	
-	
 move_trees:			;both trees move by 4 pixels per frame
 	decf	t1_x1, F, A
 	decf	t1_x1, F, A
@@ -577,22 +339,56 @@ collision_check:
 	bra	game_over
 	return
 	
-game_over:
+frame_updates:
+	call	make_ground	   ;display ground
+	call	move_ground	    ; shifts ground by 4
+	call	move_ground
+	call	move_ground
+	call	move_ground
 	
+	call	make_cloud	    ;display static cloud
+	
+	call	scoreboard	    ;increase score
+	call	display_score	    ;display current score
+	call	display_hscore	    ;display previous highscore
+	
+	movf	delay_time, W, A
+	call	key_delay_ms	    ; refresh rate set by delay time
+	call	collision_check	    ; check for collision
+	
+	call    LcdClear	    ; clear screen after delay
+	call	move_trees	    ; move trees by 4
+	
+	movlw	0x03
+	cpfsgt	t1_x1, A	    ; if tree is 3 pixels away from left edge, remove tree
+	call	reset1		    ; create new tree as replacement
+	
+	call	key_press	    ;checks for pause key
+	movwf	key_bool, A
+	movlw   0x02
+	cpfseq	key_bool, A	    ; skip if pause key is pressed
+	bra	$+4
+	call	pause
+	
+	return
+	
+game_over:
+	call	death_setup	;buzzer setup for death sound
 	call    LcdClear
 	call	LcdOpen
 	call	LcdDisplayOn
 	call    LcdClear
+	call	pulse_death	;death sound
 	
 display_game_over:
-	call	end_menu
 	
+	call	end_menu
 	call	display_score	    ;display current score
 	call	highscore	    ;updates highscore if current score > previous high score
 	call	display_hscore	    ;display highscore
 	
 	movlw	0x90
-	call	delay_ms
+	call	key_delay_ms
 
 	call	key_press
 	movwf	key_bool, A

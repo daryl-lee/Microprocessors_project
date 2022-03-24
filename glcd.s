@@ -70,7 +70,7 @@ psect	lcd_code, class=CODE
  
  LcdOpen:
 		 clrf	 LATB, A
-		 movlw	 0b11000000
+		 movlw	 0b10000000	; bit 6 set to 0 for buzzer
 		 movwf	 TRISB, A
                  bcf     TRISB,LCD_RES, A    ; Set /RES lo and reset display 
                  bcf     LATB,LCD_RES, A   
@@ -185,7 +185,8 @@ psect	lcd_code, class=CODE
                  bsf     LCD_CS1_LAT,LCD_CS1, A
                  bcf     LCD_CS2_LAT,LCD_CS2, A
                  return
-		 
+
+ ; Clears LCD by writing 0x00 looping through entire display
 LcdClear:
 		 movlw	 0x02
 		 movwf	 rightleft, A

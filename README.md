@@ -1,8 +1,6 @@
 # Microprocessors
-Repository for Physics Year 3 microprocessors lab
+Repository for Physics Year 3 microprocessors lab project
 
-A simple assembly program for PIC18 microprocessor
+Assembly program for PIC18 microprocessor
 
-Reads a table (message) from programme memory to data memory
-
-Initialises UART and writes a message (the table) to UART 
+Full game on GLCD with keypad input based on the Chrome Dinosaur Game

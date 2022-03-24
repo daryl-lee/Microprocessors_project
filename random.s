@@ -20,11 +20,11 @@ random_setup:
 
 update_seed:	
 	movf	seed, W, A ;
-	mulwf	five, A ; ARG1 * ARG2 ->
+	mulwf	five, A ; seed * 5
 	movff	PRODL, seed
 	movf	seventeen, W, A
-	addwf	seed, F, A
-	movlw	0b0111111
+	addwf	seed, F, A  ; seed + 17
+	movlw	0b0111111   ; lower 7 bits of seed
 	andwf	seed, F, A
 	
 	return

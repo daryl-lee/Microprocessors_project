@@ -100,7 +100,7 @@ hscore_eq:
     return
     bra	    highscore_low
     
-display_score:
+display_score:			; converts hex score to decimal score with high byte and low byte
     
     call    multiply16x16
     movf    RES3, W, A
@@ -155,8 +155,9 @@ display_hscore:
     movwf   position_x, A
     return
 
+    ; maps decimal score to the correct digit design
 
-display_score0:
+display_score0:		    
     cpfseq  digit0, A
     bra     display_score1
     movlw   0x00

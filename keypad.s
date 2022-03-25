@@ -7,6 +7,9 @@ key_cnt_l:	ds 1   ; reserve 1 byte for variable LCD_cnt_l
 key_cnt_h:	ds 1   ; reserve 1 byte for variable LCD_cnt_h
 key_cnt_ms:	ds 1   ; reserve 1 byte for ms counter
 digit0:		ds 1
+digit1:		ds 1
+digit2:		ds 1
+digit3:		ds 1
 digitB:		ds 1
 keys1:	ds  1
 keys2:	ds  1
@@ -24,6 +27,12 @@ key_setup:
     movwf   digit0, A
     movlw   0b11011110
     movwf   digitB, A
+    movlw   0b01110111
+    movwf   digit1, A
+    movlw   0b10110111
+    movwf   digit2, A
+    movlw   0b11010111
+    movwf   digit3, A
     
    
 key_setup_row:
@@ -57,10 +66,29 @@ key_press:
     
 decode:
     cpfseq  digit0, A
-    goto    decodeB	    
+    goto    decode1	    
     movlw   0x01
     return
     
+decode1:
+    cpfseq  digit1, A
+    goto    decode2	    
+    movlw   0x03
+    return
+    
+decode2:
+    cpfseq  digit2, A
+    goto    decode3	    
+    movlw   0x04
+    return
+    
+decode3:
+    cpfseq  digit3, A
+    goto    decodeB	    
+    movlw   0x05
+    return
+    
+
 decodeB:
     cpfseq  digitB, A
     goto    decodenull	    

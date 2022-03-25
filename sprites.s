@@ -83,10 +83,8 @@ set_page:
 display:
     
     movf	POSTINC2, W, A
-    ;movlw	0xff
     call	LcdSendData
     decfsz      size,F,A
-    ;movf	size, W, A
     bra	        display
     return
     
@@ -148,7 +146,6 @@ empty_page:
     movlw	0x00
     movwf	upper_sprite_data, A
     movf	POSTINC2, W, A
-    ;movlw	0xff
     movwf	sprite_data, A
     movlw	0x00
     cpfsgt	y_coord_temp, A ;skip if remainder is =0

@@ -6,7 +6,7 @@ extrn	load_data_treetop, load_data_treebottom, load_data_dino
 extrn	random_setup, update_seed
 extrn	score_init, scoreboard, highscore, display_score, display_hscore,  hscore_low, hscore_high
 extrn	buzzer_setup, pulse_jump, pulse_death, death_setup  
-extrn	start_menu, end_menu, pause_menu
+extrn	start_menu, end_menu, pause_menu, difficulty_menu
 extrn	env_init, make_ground, move_ground, make_cloud
 global	t1_x1, t2_x1, d_y1, seed
 
@@ -111,6 +111,39 @@ random_init:
 	addwf	t1_x1, W, A
 	addwf	min_dist, W, A
 	movwf	t2_x1, A	;starting tree 2 position = tree 1 position + minimum distance + short random number(0 - 64)
+	call    LcdClear
+	
+selection_screen:
+	call	difficulty_menu
+	call	key_press	    ;checks for pause key
+	movwf	key_bool, A
+	movlw   0x03
+	cpfseq	key_bool, A	    ; skip if pause key is pressed
+	bra	$+8
+	movlw	0xa0
+	movwf	delay_time, A
+	bra	loop
+	
+	call	key_press	    ;checks for pause key
+	movwf	key_bool, A
+	movlw   0x04
+	cpfseq	key_bool, A	    ; skip if pause key is pressed
+	bra	$+8
+	movlw	0x50
+	movwf	delay_time, A
+	bra	loop
+	
+	call	key_press	    ;checks for pause key
+	movwf	key_bool, A
+	movlw   0x05
+	cpfseq	key_bool, A	    ; skip if pause key is pressed
+	bra	selection_screen
+	movlw	0x30
+	movwf	delay_time, A
+	
+	movlw	0x40
+	call	key_delay_ms
+	
 	call    LcdClear
 	
 	; ******* Ground State ****************************************	
